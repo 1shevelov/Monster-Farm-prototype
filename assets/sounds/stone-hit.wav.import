@@ -1,0 +1,23 @@
+[remap]
+
+importer="wav"
+type="AudioStreamSample"
+path="res://.import/stone-hit.wav-2fcc400441b48a2581e615808e922917.sample"
+
+[deps]
+
+source_file="res://assets/sounds/stone-hit.wav"
+dest_files=[ "res://.import/stone-hit.wav-2fcc400441b48a2581e615808e922917.sample" ]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=0
