@@ -14,3 +14,6 @@ signal attack_start
 signal attack_damage
 # warning-ignore:unused_signal
 signal attack_finished
+# warning-ignore:unused_signal
+signal killed
+
