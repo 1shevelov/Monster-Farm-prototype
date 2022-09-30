@@ -31,7 +31,7 @@ func _ready():
 # warning-ignore:return_value_discarded
 	Signals.connect("coin_picked", self, "on_coin_picked")
 # warning-ignore:return_value_discarded
-	Signals.connect("stone_hit", self, "on_stone_hit")
+	Signals.connect("being_attacked", self, "on_being_attacked")
 # warning-ignore:return_value_discarded
 	Signals.connect("attack_damage", self, "on_attack_damage")
 # warning-ignore:return_value_discarded
@@ -87,19 +87,19 @@ func on_coin_picked(addon: int):
 	Signals.emit_signal("update_score", score)
 
 
-func on_stone_hit(stone: Node2D):
+func on_being_attacked(attacked_object: Node2D):
 	state = ATTACK
-	attacked_node = stone
+	attacked_node = attacked_object
 	Globals.world_speed = Globals.ZERO_WORLD_SPEED
 	$AttackTimer.start()
-	Signals.emit_signal("attack_start")
+	Signals.emit_signal("world_stopped")
 
 
 func kill_avatar():
 #		print("The avatar is dead")
 	self.hide()
 	Signals.disconnect("coin_picked", self, "on_coin_picked")
-	Signals.disconnect("stone_hit", self, "on_stone_hit")
+	Signals.disconnect("being_attacked", self, "on_being_attacked")
 	if not Globals.SILENT_MODE:
 		death_sound.play()
 	Signals.emit_signal("game_over")

@@ -9,12 +9,12 @@ func _ready():
 	scroll_speed = 0.5 * Globals.world_speed
 		
 # warning-ignore:return_value_discarded
-	Signals.connect("attack_start", self, "on_attack_start")
+	Signals.connect("world_stopped", self, "on_world_stopped")
 # warning-ignore:return_value_discarded
 	Signals.connect("attack_finished", self, "on_attack_finished")
 
 
-func on_attack_start():
+func on_world_stopped():
 	is_stop = true
 	
 
