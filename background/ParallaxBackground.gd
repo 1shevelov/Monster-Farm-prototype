@@ -7,7 +7,7 @@ const MIDBACK_DELTA_SPEED := -25
 const MIDBACK_DELTA_STOP_SPEED := 0
 const SKY_DELTA_SPEED := 4
 
-var is_world_moving := false
+var is_world_moving := true
 
 
 func _ready() -> void:

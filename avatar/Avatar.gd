@@ -14,7 +14,8 @@ enum {
 
 var state := RUN
 
-var score := Globals.INITIAL_SCORE
+#var score := Globals.INITIAL_SCORE
+var money := Globals.INITIAL_MONEY
 
 onready var animation := $AnimatedSprite
 onready var jump_sound := $JumpSound
@@ -82,9 +83,10 @@ func get_random_state(state_list):
 	return state_list.front()
 	
 	
-func on_coin_picked(addon: int):
-	score += addon
-	Signals.emit_signal("update_score", score)
+func on_coin_picked(money_given: int):
+	money += money_given
+#	Signals.emit_signal("update_score", score)
+	Signals.emit_signal("update_money", money)
 
 
 func on_being_attacked(attacked_object: Node2D):
