@@ -11,7 +11,7 @@ func _physics_process(_delta):
 
 func _on_Pickup_body_entered(body: Node):
 	if body.name == "Avatar":
-		self.hide()
+		hide()
 		if not Globals.SILENT_MODE:
 			pickup_sound.play()
 		Signals.emit_signal("coin_picked", gives_money)

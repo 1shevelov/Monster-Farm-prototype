@@ -21,3 +21,5 @@ signal killed
 signal being_attacked
 # warning-ignore:unused_signal
 signal health_changed
+# warning-ignore:unused_signal
+signal one_hit_killed

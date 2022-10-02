@@ -8,6 +8,7 @@ var world_speed := DEFAULT_WORLD_SPEED
 const SPAWN_LAYER_NUM := 2
 const SPAWN_LAYER_HEIGHT := 80 # in pixels
 
+const SPAWN_COINS_MAX := 5
 
 #const INITIAL_SCORE := 0
 

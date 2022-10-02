@@ -37,6 +37,8 @@ func _ready():
 	Signals.connect("attack_damage", self, "on_attack_damage")
 # warning-ignore:return_value_discarded
 	Signals.connect("killed", self, "on_killed")
+# warning-ignore:return_value_discarded
+	Signals.connect("one_hit_killed", self, "on_one_hit_killed")
 	
 	randomize()
 
@@ -97,9 +99,15 @@ func on_being_attacked(attacked_object: Node2D):
 	Signals.emit_signal("world_stopped")
 
 
+func on_one_hit_killed(killed_node: Node2D) -> void:
+	print(killed_node, " killed")
+#	animation.stop()
+	animation.play("AirAttack")
+
+
 func kill_avatar():
 #		print("The avatar is dead")
-	self.hide()
+	hide()
 	Signals.disconnect("coin_picked", self, "on_coin_picked")
 	Signals.disconnect("being_attacked", self, "on_being_attacked")
 	if not Globals.SILENT_MODE:
@@ -120,7 +128,7 @@ func on_attack_damage():
 
 func on_killed(killed_node: Node2D) -> void:
 	if attacked_node == killed_node:
-		print (killed_node, " killed")
+		print(killed_node, " killed")
 		$AttackTimer.stop()
 		state = RUN
 		Globals.world_speed = Globals.DEFAULT_WORLD_SPEED
