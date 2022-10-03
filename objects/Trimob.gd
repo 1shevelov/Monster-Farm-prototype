@@ -7,7 +7,7 @@ func _physics_process(_delta):
 	move()
 
 
-func _on_Obstacle_body_entered(body: Node):
+func _on_Collision_body_entered(body: Node):
 	if body.name == "Avatar":
 		hide()
 		if not Globals.SILENT_MODE:
@@ -19,5 +19,6 @@ func _on_Obstacle_body_entered(body: Node):
 
 func _on_VisibilityNotifier2D_screen_exited():
 	queue_free()
+
 
 

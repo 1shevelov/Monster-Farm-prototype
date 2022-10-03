@@ -11,7 +11,7 @@ func _physics_process(_delta):
 	move()
 
 
-func _on_Obstacle_body_entered(body: Node):
+func _on_Collision_body_entered(body: Node):
 	if body.name == "Avatar":
 		if not Globals.SILENT_MODE:
 			hit_sound.play()
@@ -33,3 +33,5 @@ func receive_damage(amount: int) -> void:
 		Signals.emit_signal("killed", self)
 #		die effect or sound?
 		queue_free()
+
+

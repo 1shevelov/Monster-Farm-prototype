@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=2]
+[gd_scene load_steps=24 format=2]
 
 [ext_resource path="res://assets/avatar/adventurer-run-01.png" type="Texture" id=1]
 [ext_resource path="res://assets/avatar/adventurer-run-02.png" type="Texture" id=2]
@@ -19,6 +19,7 @@
 [ext_resource path="res://assets/avatar/adventurer-air-attack2-00.png" type="Texture" id=17]
 [ext_resource path="res://assets/avatar/adventurer-air-attack2-01.png" type="Texture" id=18]
 [ext_resource path="res://assets/avatar/adventurer-air-attack2-02.png" type="Texture" id=19]
+[ext_resource path="res://HUD/HPBarUI.tscn" type="PackedScene" id=20]
 
 [sub_resource type="SpriteFrames" id=1]
 animations = [ {
@@ -76,6 +77,8 @@ volume_db = -20.0
 [node name="DeathSound" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 9 )
 volume_db = -25.0
+
+[node name="HPBarUI" parent="." instance=ExtResource( 20 )]
 
 [connection signal="body_entered" from="Area2D" to="." method="_on_Area2D_body_entered"]
 [connection signal="body_exited" from="Area2D" to="." method="_on_Area2D_body_exited"]

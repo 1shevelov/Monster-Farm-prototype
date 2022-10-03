@@ -26,6 +26,8 @@ onready var death_sound := $DeathSound
 var attack_damage := 10
 var attacked_node: Node2D = null
 
+const mobs: GDScript = preload("res://objects/LoadMobs.gd")
+
 
 func _ready():
 	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Master"), 0)

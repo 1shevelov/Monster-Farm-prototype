@@ -1,0 +1,13 @@
+{
+    "name": "treasure_chest",
+    "type": "obstacle",
+    "hp": {
+        "min": 200,
+        "max": 500
+    },
+    "money": {
+        "min": 250,
+        "max": 900
+    },
+    "image": "treasure_chest.png"
+}
