@@ -26,10 +26,13 @@ onready var death_sound := $DeathSound
 var attack_damage := 10
 var attacked_node: Node2D = null
 
-const mobs: GDScript = preload("res://objects/LoadMobs.gd")
+const Objects: GDScript = preload("res://objects/LoadObjects.gd")
+onready var objects_instance := Objects.new()
 
 
 func _ready():
+	objects_instance.load_all_objects()
+	
 	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Master"), 0)
 # warning-ignore:return_value_discarded
 	Signals.connect("coin_picked", self, "on_coin_picked")
