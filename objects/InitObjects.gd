@@ -1,8 +1,9 @@
 extends GDScript
 
-const files_prefix := "res://objects/"
 const objects_files := ["treasure_chest.json"]
 const objects: Array = []
+
+const obstacle_scene: String = Resources.objects_scenes + "Obstacle.tscn"
 
 
 func _ready() -> void:
@@ -15,7 +16,7 @@ func load_all_objects() -> void:
 		if not validate_object(objects[i]):
 			objects.pop_back()
 		else:
-			build_object(objects[i])
+			init_object(objects[i])
 
 
 func validate_object(_object: Dictionary) -> bool:
@@ -25,14 +26,23 @@ func validate_object(_object: Dictionary) -> bool:
 	return true
 
 
-func build_object(_object: Dictionary) -> void:
+func init_object(object: Dictionary) -> void:
 #	make scene
-	pass
+	match object.type:
+		"obstacle":
+			build_obstacle(object)
+		_:
+			print("Object type = ", object.type)
+
+
+func build_obstacle(obstacle: Dictionary) -> void:
+	var new_obstacle: Node2D = load(obstacle_scene).instance()
+	new_obstacle.init(obstacle)
 
 
 func load_object(object_file: String) -> Dictionary:
 	var file: File = File.new()
-	var full_file_name: String = files_prefix + object_file
+	var full_file_name: String = Resources.objects + object_file
 	var err: int = file.open(full_file_name, File.READ)
 	if err == 7: # file not found
 		file.close()

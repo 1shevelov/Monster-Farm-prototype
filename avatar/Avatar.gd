@@ -26,7 +26,7 @@ onready var death_sound := $DeathSound
 var attack_damage := 10
 var attacked_node: Node2D = null
 
-const Objects: GDScript = preload("res://objects/LoadObjects.gd")
+const Objects: GDScript = preload("res://objects/InitObjects.gd")
 onready var objects_instance := Objects.new()
 
 
