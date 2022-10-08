@@ -1,6 +1,6 @@
 extends Node2D
 
-export (Array, PackedScene) var scenes
+#export (Array, PackedScene) var scenes
 
 var random_scene = RandomNumberGenerator.new()
 var selected_scene_index := 0
@@ -9,12 +9,29 @@ const coin_scene := "Coin"
 const stone_scene := "Stone"
 const trimob_scene := "Trimob"
 
+const objects_scenes = [
+	"res://objects/Coin.tscn",
+	"res://objects/Stone.tscn",
+	"res://objects/Trimob.tscn"]
+	
+var scenes = []
+
 
 func _ready():
 # warning-ignore:return_value_discarded
 	Signals.connect("world_stopped", self, "on_world_stopped")
 # warning-ignore:return_value_discarded
 	Signals.connect("attack_finished", self, "on_attack_finished")
+# warning-ignore:return_value_discarded
+	Signals.connect("object_created", self, "on_object_created")
+	
+	for i in objects_scenes.size():
+		scenes.append(load(objects_scenes[i]))
+
+
+func on_object_created(new_object: String) -> void:
+#	print(new_object)
+	scenes.append(load(new_object))
 
 
 func on_world_stopped():

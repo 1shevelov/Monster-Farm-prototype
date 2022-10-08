@@ -3,7 +3,7 @@ extends Node
 # this is an endless scroller
 const DEFAULT_WORLD_SPEED := 10.0
 const ZERO_WORLD_SPEED := 0.0001
-var world_speed := DEFAULT_WORLD_SPEED
+var world_speed := ZERO_WORLD_SPEED
 
 const SPAWN_LAYER_NUM := 2
 const SPAWN_LAYER_HEIGHT := 80 # in pixels

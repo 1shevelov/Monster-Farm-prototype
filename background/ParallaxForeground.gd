@@ -5,7 +5,7 @@ onready var foreground := $ForegroundParallaxLayer
 const FOREGROUND_DELTA_SPEED := -100
 const FOREGROUND_DELTA_STOP_SPEED := 0
 
-var is_world_moving := true
+var is_world_moving := false
 
 
 func _ready() -> void:

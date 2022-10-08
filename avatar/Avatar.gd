@@ -12,7 +12,7 @@ enum {
 	ATTACK
 }
 
-var state := RUN
+var state := IDLE
 
 #var score := Globals.INITIAL_SCORE
 var money := Globals.INITIAL_MONEY
@@ -26,14 +26,8 @@ onready var death_sound := $DeathSound
 var attack_damage := 10
 var attacked_node: Node2D = null
 
-const Objects: GDScript = preload("res://objects/InitObjects.gd")
-onready var objects_instance := Objects.new()
-
 
 func _ready():
-	objects_instance.load_all_objects()
-	
-	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Master"), 0)
 # warning-ignore:return_value_discarded
 	Signals.connect("coin_picked", self, "on_coin_picked")
 # warning-ignore:return_value_discarded
@@ -44,14 +38,12 @@ func _ready():
 	Signals.connect("killed", self, "on_killed")
 # warning-ignore:return_value_discarded
 	Signals.connect("one_hit_killed", self, "on_one_hit_killed")
-	
-	randomize()
 
 
 func _physics_process(delta):
 	match state:
 		IDLE:
-			pass
+			animation.play("Idle")
 		RUN:
 			animation.play("Run")
 		JUMP:
@@ -70,12 +62,18 @@ func _physics_process(delta):
 
 
 func _input(event):
+	if state == IDLE and event.is_action_pressed("jump"):
+		print("START")
+		state = RUN
+		Globals.world_speed = Globals.DEFAULT_WORLD_SPEED
+		Signals.emit_signal("attack_finished")
+
 	if state == RUN and event.is_action_pressed("jump"):
 		state = JUMP
 
 
 func _on_Area2D_body_entered(body):
-	if body is StaticBody2D:
+	if body is StaticBody2D and state != IDLE:
 		state = RUN
 
 
@@ -84,6 +82,7 @@ func _on_Area2D_body_exited(body):
 		state = JUMP
 
 
+# pseudo AI
 func get_random_state(state_list):
 	randomize()
 	state_list.shuffle()

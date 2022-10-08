@@ -23,3 +23,7 @@ signal being_attacked
 signal health_changed
 # warning-ignore:unused_signal
 signal one_hit_killed
+# warning-ignore:unused_signal
+signal object_created
+# warning-ignore:unused_signal
+signal ready_to_start
