@@ -2,17 +2,20 @@ extends KinematicBody2D
 
 var velocity := Vector2.ZERO
 
-export var jump_velocity: int = 600
-export var gravity_scale: float = 20.0
+export var jump_velocity := 600
+export var dash_velocity := 250
+export var gravity_scale := 20.0
 
 enum {
+	START,
 	IDLE,
 	RUN,
 	JUMP,
+	DASH,
 	ATTACK
 }
 
-var state := IDLE
+var state := START
 
 #var score := Globals.INITIAL_SCORE
 var money := Globals.INITIAL_MONEY
@@ -40,7 +43,7 @@ func _ready():
 
 func _physics_process(delta):
 	match state:
-		IDLE:
+		START:
 			animation.play("Idle")
 		RUN:
 			animation.play("Run")
@@ -51,6 +54,16 @@ func _physics_process(delta):
 			if not Globals.SILENT_MODE:
 				jump_sound.play()
 			state = IDLE
+		DASH:
+			velocity = Vector2.ZERO
+			velocity.y -= jump_velocity
+			animation.play("Jump")
+			if not Globals.SILENT_MODE:
+				jump_sound.play()
+			animation.play("Dash")
+#			velocity.x += dash_velocity
+#			TODO: shift position
+			state = IDLE
 		ATTACK:
 			animation.play("Attack")
 	
@@ -60,7 +73,8 @@ func _physics_process(delta):
 
 
 func _input(event):
-	if state == IDLE and event.is_action_pressed("jump"):
+#	IDLE state only on world start
+	if state == START and event.is_action_pressed("jump"):
 		print("START")
 		state = RUN
 		Globals.world_speed = Globals.DEFAULT_WORLD_SPEED
@@ -68,17 +82,19 @@ func _input(event):
 
 	if state == RUN and event.is_action_pressed("jump"):
 		state = JUMP
+		
+	if state == ATTACK and event.is_action_pressed("jump"):
+		state = DASH
 
 
 func _on_Area2D_body_entered(body):
-	if body is StaticBody2D and state == JUMP:
+	if body is StaticBody2D and state != START:
 		state = RUN
 
 
-func _on_Area2D_body_exited(_body):
-#	if body is StaticBody2D:
-#		state = JUMP
-	pass
+func _on_Area2D_body_exited(body):
+	if body is StaticBody2D:
+		state = JUMP
 
 
 # pseudo AI
