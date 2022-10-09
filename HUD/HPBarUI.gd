@@ -24,7 +24,7 @@ func update_health(health_pool_percent: float):
 #	$ProgressBar.modulate(Color.red)
 
 
-func on_killed(attacked_node: Node2D):
+func on_killed(attacked_node: Node2D, _money_given: int = 0):
 	if attacked_node == attacked_object:
 		attacked_object.get_node("HPBarUI").hide()
 		attacked_object = null

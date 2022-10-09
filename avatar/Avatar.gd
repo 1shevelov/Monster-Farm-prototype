@@ -71,13 +71,14 @@ func _input(event):
 
 
 func _on_Area2D_body_entered(body):
-	if body is StaticBody2D and state != IDLE:
+	if body is StaticBody2D and state == JUMP:
 		state = RUN
 
 
-func _on_Area2D_body_exited(body):
-	if body is StaticBody2D:
-		state = JUMP
+func _on_Area2D_body_exited(_body):
+#	if body is StaticBody2D:
+#		state = JUMP
+	pass
 
 
 # pseudo AI
@@ -123,9 +124,11 @@ func _on_AttackTimer_timeout():
 	attacked_node.receive_damage(attack_damage)
 
 
-func on_killed(killed_node: Node2D) -> void:
+func on_killed(killed_node: Node2D, money_given: int = 0) -> void:
 	if attacked_node == killed_node:
-		print(killed_node, " killed")
+		print(killed_node, " killed, giving ", money_given)
+		money += money_given
+		Signals.emit_signal("update_money", money)
 		$AttackTimer.stop()
 		state = RUN
 		Globals.world_speed = Globals.DEFAULT_WORLD_SPEED

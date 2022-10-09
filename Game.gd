@@ -9,8 +9,6 @@ func _ready():
 	
 	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Master"), 0)
 	randomize()
-
-# warning-ignore:return_value_discarded
 	
 	
 func on_ready_to_start() -> void:
