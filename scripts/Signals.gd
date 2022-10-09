@@ -12,8 +12,6 @@ signal game_over
 # warning-ignore:unused_signal
 signal world_stopped
 # warning-ignore:unused_signal
-signal attack_damage
-# warning-ignore:unused_signal
 signal attack_finished
 # warning-ignore:unused_signal
 signal killed
@@ -24,6 +22,6 @@ signal health_changed
 # warning-ignore:unused_signal
 signal one_hit_killed
 # warning-ignore:unused_signal
-signal object_created
+signal objects_ready
 # warning-ignore:unused_signal
-signal ready_to_start
+#signal ready_to_start

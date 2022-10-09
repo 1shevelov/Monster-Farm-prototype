@@ -15,10 +15,10 @@ func load_all_objects() -> void:
 		objects.append(load_object(objects_files[i]))
 		if not validate_object(objects[i]):
 			objects.pop_back()
-		else:
-			init_object(objects[i])
+#		else:
+#			init_object(objects[i])
 			
-	Signals.emit_signal("ready_to_start")
+	Signals.emit_signal("objects_ready", objects)
 
 
 func validate_object(_object: Dictionary) -> bool:
@@ -28,31 +28,31 @@ func validate_object(_object: Dictionary) -> bool:
 	return true
 
 
-func init_object(object: Dictionary) -> void:
-#	make scene
-	match object.type:
-		"obstacle":
-			build_obstacle_node(object)
-		_:
-			print("Object type = ", object.type)
+#func init_object(object: Dictionary) -> void:
+##	make scene
+#	match object.type:
+#		"obstacle":
+#			build_obstacle_node(object)
+#		_:
+#			print("Object type = ", object.type)
 
 
-func build_obstacle_node(obstacle: Dictionary) -> void:
-	var new_obstacle: Node2D = load(obstacle_scene).instance()
-	new_obstacle.init(obstacle)
-	pack_scene(new_obstacle)
+#func build_obstacle_node(obstacle: Dictionary) -> void:
+#	var new_obstacle: Node2D = load(obstacle_scene).instance()
+#	new_obstacle.init(obstacle)
+#	pack_scene(new_obstacle)
 
 
-func pack_scene(packed_node: Node2D) -> void:
-	var new_pack = PackedScene.new()
-	var res = new_pack.pack(packed_node)
-	if res == OK:
-		var pack_path := "user://object_chest.scn"
-		var error = ResourceSaver.save(pack_path, new_pack)
-		if error == OK:
-			Signals.emit_signal("object_created", pack_path)
-		else:
-			push_error("Error saving " + pack_path)
+#func pack_scene(packed_node: Node2D) -> void:
+#	var new_pack = PackedScene.new()
+#	var res = new_pack.pack(packed_node)
+#	if res == OK:
+#		var pack_path := "user://object_chest.scn"
+#		var error = ResourceSaver.save(pack_path, new_pack)
+#		if error == OK:
+#			Signals.emit_signal("object_created", pack_path)
+#		else:
+#			push_error("Error saving " + pack_path)
 
 
 func load_object(object_file: String) -> Dictionary:

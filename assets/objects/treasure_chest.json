@@ -1,6 +1,6 @@
 {
     "name": "treasure_chest",
-    "type": "obstacle",
+    "type": "Obstacle",
     "hp": {
         "min": 200,
         "max": 500

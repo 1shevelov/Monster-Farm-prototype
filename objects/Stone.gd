@@ -27,8 +27,7 @@ func receive_damage(amount: int) -> void:
 	print(self, " has health = ", current_health)
 	if current_health < 0:
 		current_health = 0 
-	Signals.emit_signal("health_changed", self,
-		float(current_health) / float(full_health_pool) * 100)
+	$HPBarUI.update_health(float(current_health) / float(full_health_pool) * 100)
 	if current_health <= 0:
 		Signals.emit_signal("killed", self)
 #		die effect or sound?

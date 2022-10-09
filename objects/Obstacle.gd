@@ -2,9 +2,12 @@ extends "../scripts/ScrollMovement.gd"
 
 onready var hit_sound := $HitSound
 
-onready var full_hp: int = 0
-#	round(rand_range(Globals.STONE_HEALTH_MIN, Globals.STONE_HEALTH_MAX))
-onready var current_hp: int = full_hp
+var full_hp: int
+var current_hp: int
+
+
+func _ready():
+	pass
 
 
 func init(obj: Dictionary) -> void:
@@ -37,19 +40,18 @@ func _on_Collision_body_entered(body: Node):
 		if not Globals.SILENT_MODE:
 			hit_sound.play()
 		Signals.emit_signal("being_attacked", self)
+		print(self, " attacked, hp= ", current_hp)
 
 
 func _on_VisibilityNotifier2D_screen_exited():
 	queue_free()
 
 
-func receive_damage(amount: int) -> void:
-	current_hp -= amount
-	print(self, " has health = ", current_hp)
+func receive_damage(damage_amount: int) -> void:
+	current_hp -= damage_amount
 	if current_hp < 0:
 		current_hp = 0 
-	Signals.emit_signal("health_changed", self,
-		float(current_hp) / float(full_hp) * 100)
+	$HPBarUI.update_health(float(current_hp) / float(full_hp) * 100)
 	if current_hp <= 0:
 		Signals.emit_signal("killed", self)
 #		die effect or sound?

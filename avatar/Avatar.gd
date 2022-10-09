@@ -33,8 +33,6 @@ func _ready():
 # warning-ignore:return_value_discarded
 	Signals.connect("being_attacked", self, "on_being_attacked")
 # warning-ignore:return_value_discarded
-	Signals.connect("attack_damage", self, "on_attack_damage")
-# warning-ignore:return_value_discarded
 	Signals.connect("killed", self, "on_killed")
 # warning-ignore:return_value_discarded
 	Signals.connect("one_hit_killed", self, "on_one_hit_killed")
@@ -122,12 +120,7 @@ func kill_avatar():
 
 
 func _on_AttackTimer_timeout():
-	Signals.emit_signal("attack_damage")
-
-
-func on_attack_damage():
 	attacked_node.receive_damage(attack_damage)
-	print("attack on ", attack_damage)
 
 
 func on_killed(killed_node: Node2D) -> void:

@@ -11,7 +11,6 @@ func _ready():
 	randomize()
 
 # warning-ignore:return_value_discarded
-	Signals.connect("ready_to_start", self, "on_ready_to_start")
 	
 	
 func on_ready_to_start() -> void:
