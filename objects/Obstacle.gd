@@ -15,6 +15,9 @@ func _ready():
 func init(obj: Dictionary) -> void:
 	if obj.has("image"):
 		$Sprite.set_texture(load(Resources.objects + obj.image))
+		var sprite_size: Vector2 = $Sprite.get_texture().get_size()
+		$Collision/CollisionShape2D.get_shape().set_extents(sprite_size / 1.5)
+		
 	if obj.has("hp"):
 		var hp_min := 0.0
 		var hp_max := 0.0
@@ -26,7 +29,6 @@ func init(obj: Dictionary) -> void:
 				hp_min = obj.hp.min
 			if obj.hp.has("max"):
 				hp_max = obj.hp.max
-				
 		if hp_min >= 0 and hp_max >= hp_min:
 # warning-ignore:narrowing_conversion
 			full_hp = round(rand_range(hp_min, hp_max))
@@ -43,12 +45,9 @@ func init(obj: Dictionary) -> void:
 				money_min = obj.money.min
 			if obj.money.has("max"):
 				money_max = obj.money.max
-				
 		if money_min >= 0 and money_max >= money_min:
 # warning-ignore:narrowing_conversion
 			money = round(rand_range(money_min, money_max))
-		
-	print(self, " has money = ", money)
 
 
 func _physics_process(_delta):

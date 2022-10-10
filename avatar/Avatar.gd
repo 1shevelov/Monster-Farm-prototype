@@ -57,7 +57,7 @@ func _physics_process(delta):
 		DASH:
 			velocity = Vector2.ZERO
 			velocity.y -= jump_velocity
-			animation.play("Jump")
+#			animation.play("Jump")
 			if not Globals.SILENT_MODE:
 				jump_sound.play()
 			animation.play("Dash")
@@ -75,16 +75,21 @@ func _physics_process(delta):
 func _input(event):
 #	IDLE state only on world start
 	if state == START and event.is_action_pressed("jump"):
-		print("START")
+#		print("START")
 		state = RUN
-		Globals.world_speed = Globals.DEFAULT_WORLD_SPEED
+		Globals.world_speed = Globals.RUN_WORLD_SPEED
 		Signals.emit_signal("attack_finished")
 
 	if state == RUN and event.is_action_pressed("jump"):
 		state = JUMP
 		
 	if state == ATTACK and event.is_action_pressed("jump"):
+		$AttackTimer.stop()
 		state = DASH
+		print("DASH")
+		Globals.world_speed = Globals.DASH_WORLD_SPEED
+		Signals.emit_signal("attack_finished")
+		$DashTimer.start()
 
 
 func _on_Area2D_body_entered(body):
@@ -92,9 +97,10 @@ func _on_Area2D_body_entered(body):
 		state = RUN
 
 
-func _on_Area2D_body_exited(body):
-	if body is StaticBody2D:
-		state = JUMP
+func _on_Area2D_body_exited(_body):
+#	if body is StaticBody2D and state != DASH:
+#		state = JUMP
+		pass
 
 
 # pseudo AI
@@ -147,6 +153,14 @@ func on_killed(killed_node: Node2D, money_given: int = 0) -> void:
 		Signals.emit_signal("update_money", money)
 		$AttackTimer.stop()
 		state = RUN
-		Globals.world_speed = Globals.DEFAULT_WORLD_SPEED
+		Globals.world_speed = Globals.RUN_WORLD_SPEED
 		Signals.emit_signal("attack_finished")
+
+
+func _on_DashTimer_timeout():
+	state = RUN
+	Globals.world_speed = Globals.RUN_WORLD_SPEED
+	$DashTimer.stop()
+
+
 

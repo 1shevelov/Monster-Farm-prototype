@@ -12,5 +12,5 @@ func _ready():
 	
 	
 func on_ready_to_start() -> void:
-#	Globals.world_speed = Globals.DEFAULT_WORLD_SPEED
+#	Globals.world_speed = Globals.RUN_WORLD_SPEED
 	pass
