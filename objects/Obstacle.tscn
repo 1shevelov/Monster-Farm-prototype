@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://objects/Collision.tscn" type="PackedScene" id=1]
 [ext_resource path="res://objects/Obstacle.gd" type="Script" id=2]
+[ext_resource path="res://assets/sounds/coin-pickup.wav" type="AudioStream" id=3]
 [ext_resource path="res://assets/sounds/stone-hit.wav" type="AudioStream" id=4]
 [ext_resource path="res://HUD/HPBarUI.tscn" type="PackedScene" id=5]
 
@@ -26,6 +27,10 @@ stream = ExtResource( 4 )
 volume_db = -25.0
 
 [node name="HPBarUI" parent="." instance=ExtResource( 5 )]
+
+[node name="MoneySound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 3 )
+volume_db = -22.0
 
 [connection signal="body_entered" from="Collision" to="." method="_on_Collision_body_entered"]
 [connection signal="screen_exited" from="VisibilityNotifier2D" to="." method="_on_VisibilityNotifier2D_screen_exited"]

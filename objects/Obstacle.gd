@@ -1,6 +1,7 @@
 extends "../scripts/ScrollMovement.gd"
 
 onready var hit_sound := $HitSound
+onready var money_sound := $MoneySound
 
 var full_hp: int
 var current_hp: int
@@ -73,6 +74,8 @@ func receive_damage(damage_amount: int) -> void:
 	$HPBarUI.update_health(float(current_hp) / float(full_hp) * 100)
 	if current_hp <= 0:
 		Signals.emit_signal("killed", self, money)
+		if money > 0 and not Globals.SILENT_MODE:
+			money_sound.play()
 #		die effect or sound?
 		queue_free()
 
