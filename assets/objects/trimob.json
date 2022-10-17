@@ -1,0 +1,10 @@
+{
+    "name": "trimob",
+    "type": "OneHitMob",
+    "money": {
+	"min": 2,
+	"max": 5
+	},
+    "image": "trimob.png",
+    "weapon": "trimob's talons"
+}

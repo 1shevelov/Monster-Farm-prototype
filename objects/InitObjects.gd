@@ -4,10 +4,13 @@
 
 extends GDScript
 
-const objects_files := ["treasure_chest.json"]
+const objects_files := [
+	"trimob.json",
+	"big_stone.json",
+	"treasure_chest.json"]
 const objects: Array = []
 
-const obstacle_scene: String = Resources.objects_scenes + "Obstacle.tscn"
+#const obstacle_scene: String = Resources.objects_scenes + "Obstacle.tscn"
 
 
 func load_all_objects() -> void:

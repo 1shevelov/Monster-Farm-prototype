@@ -23,32 +23,36 @@ func init(obj: Dictionary) -> void:
 		var hp_min := 0.0
 		var hp_max := 0.0
 		if typeof(obj.hp) == TYPE_REAL:
-			hp_min = obj.hp
-			hp_max = hp_min
+			if obj.hp > 0:
+				hp_min = obj.hp
+			full_hp = int(round(hp_min))
+			current_hp = full_hp
 		elif typeof(obj.hp) == TYPE_DICTIONARY:
-			if obj.hp.has("min"):
+			if obj.hp.has("min") and obj.hp.min == TYPE_REAL and obj.hp.min > 0:
 				hp_min = obj.hp.min
-			if obj.hp.has("max"):
-				hp_max = obj.hp.max
-		if hp_min >= 0 and hp_max >= hp_min:
-# warning-ignore:narrowing_conversion
-			full_hp = round(rand_range(hp_min, hp_max))
+			if obj.hp.has("max") and obj.hp.max == TYPE_REAL:
+				if obj.hp.max > hp_min:
+					hp_max = obj.hp.max
+				else:
+					hp_max = hp_min
+			full_hp = int(round(rand_range(hp_min, hp_max)))
 			current_hp = full_hp
 			
 	if obj.has("money"):
 		var money_min := 0.0
 		var money_max := 0.0
 		if typeof(obj.money) == TYPE_REAL:
-			money_min = obj.money
-			money_max = obj.money
+			if obj.money > 0:
+				money_min = obj.money
+			money = int(round(money_min))
 		elif typeof(obj.money) == TYPE_DICTIONARY:
-			if obj.money.has("min"):
+			if obj.money.has("min") and obj.money.min == TYPE_REAL and obj.money.min > 0:
 				money_min = obj.money.min
-			if obj.money.has("max"):
+			if obj.money.has("max") and obj.money.max == TYPE_REAL:
 				money_max = obj.money.max
-		if money_min >= 0 and money_max >= money_min:
-# warning-ignore:narrowing_conversion
-			money = round(rand_range(money_min, money_max))
+				if money_max < money_min:
+					money_max = money_min
+		money = int(round(rand_range(money_min, money_max)))
 
 
 func _physics_process(_delta):

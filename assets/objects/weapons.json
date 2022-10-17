@@ -1,0 +1,33 @@
+{
+	{
+		"name": "stick",
+		"damage": {
+			"min": 5,
+			"max": 8
+		},
+		"delay": 1.0
+	},
+	{
+		"name": "sword",
+		"damage": {
+			"min": 15,
+			"max": 25
+		},
+		"delay": 2.0,
+		"probability": 0.9,
+	},
+	{
+		"name": "trimob's talons",
+		"damage": 5,
+		"one-time": true
+	},
+	{
+		"name": "treasure chest's explosion",
+		"damage": {
+			"min": 45,
+			"max": 79
+		},
+		"one-time": true,
+		"probability": 0.05
+	}
+}

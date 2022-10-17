@@ -124,10 +124,18 @@ func on_being_attacked(attacked_object: Node2D):
 	Signals.emit_signal("world_stopped")
 
 
-func on_one_hit_killed(killed_node: Node2D) -> void:
+func on_one_hit_killed(killed_node: Node2D, money_given: int = 0) -> void:
 	print(killed_node, " killed")
+	add_money(money_given)
 #	animation.stop()
 	animation.play("AirAttack")
+
+
+func add_money(money_given: int) -> void:
+	if money > 0:
+		print("Money given: ", money_given)
+		money += money_given
+		Signals.emit_signal("update_money", money)
 
 
 func kill_avatar():
@@ -148,9 +156,8 @@ func _on_AttackTimer_timeout():
 
 func on_killed(killed_node: Node2D, money_given: int = 0) -> void:
 	if attacked_node == killed_node:
-		print(killed_node, " killed, giving ", money_given)
-		money += money_given
-		Signals.emit_signal("update_money", money)
+		print(killed_node, " killed")
+		add_money(money_given)
 		$AttackTimer.stop()
 		state = RUN
 		Globals.world_speed = Globals.RUN_WORLD_SPEED

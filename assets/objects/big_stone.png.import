@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/obstacle.png-1dd944c363c238b0e0275fa2c9d8fe17.stex"
+path="res://.import/big_stone.png-93e9a239c64ddc83a195597178e2a21b.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/objects/obstacle.png"
-dest_files=[ "res://.import/obstacle.png-1dd944c363c238b0e0275fa2c9d8fe17.stex" ]
+source_file="res://assets/objects/big_stone.png"
+dest_files=[ "res://.import/big_stone.png-93e9a239c64ddc83a195597178e2a21b.stex" ]
 
 [params]
 

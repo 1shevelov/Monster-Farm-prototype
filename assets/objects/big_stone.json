@@ -1,0 +1,10 @@
+{
+    "name": "big_stone",
+    "type": "Obstacle",
+    "hp": {
+        "min": 31,
+        "max": 68
+    },
+    "money": 0,
+    "image": "big_stone.png"
+}

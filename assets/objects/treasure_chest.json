@@ -9,5 +9,6 @@
         "min": 250,
         "max": 900
     },
-    "image": "treasure_chest.png"
+    "image": "treasure_chest.png",
+    "weapon": "treasure chest's explosion"
 }

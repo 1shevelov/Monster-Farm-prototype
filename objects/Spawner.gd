@@ -6,14 +6,12 @@ var RNG = RandomNumberGenerator.new()
 var selected_scene_index := 0
 
 const coin_scene := "Coin"
-const stone_scene := "Stone"
-const trimob_scene := "Trimob"
+const onehitmob_scene := "OneHitMob"
 const obstacle_scene := "Obstacle"
 
 const packed_scenes = [
 	"res://objects/Coin.tscn",
-	"res://objects/Stone.tscn",
-	"res://objects/Trimob.tscn",
+	"res://objects/OneHitMob.tscn",
 	"res://objects/Obstacle.tscn"]
 var scenes := []
 
@@ -51,11 +49,15 @@ func _on_Timer_timeout():
 	selected_scene_index = RNG.randi_range(0, scenes.size() - 1)
 	var temp_scene = scenes[selected_scene_index].instance()
 	match temp_scene.name:
-		coin_scene, trimob_scene:
+		coin_scene:
 			temp_scene.translate(Vector2(0, -Globals.SPAWN_LAYER_HEIGHT \
 				* rand_range(1, Globals.SPAWN_LAYER_NUM)))
 		obstacle_scene:
 			temp_scene.init(get_object(obstacle_scene))
+		onehitmob_scene:
+			temp_scene.init(get_object(onehitmob_scene))
+			temp_scene.translate(Vector2(0, -Globals.SPAWN_LAYER_HEIGHT \
+				* rand_range(1, Globals.SPAWN_LAYER_NUM)))
 	
 #	add_child_below_node(self, temp_scene) - was used in tutorial, why?
 	add_child(temp_scene)
@@ -65,9 +67,12 @@ func _on_Timer_timeout():
 
 
 func get_object(scene_name: String) -> Dictionary:
+	var scene_objects: Array = []
 	for obj in objects:
 		if(obj["type"] == scene_name):
-			return obj
+			scene_objects.append(obj)
+	if scene_objects.size() > 0:
+		return scene_objects[randi() % scene_objects.size()]
 	return {}
 
 
