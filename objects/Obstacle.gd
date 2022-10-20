@@ -28,15 +28,16 @@ func init(obj: Dictionary) -> void:
 			full_hp = int(round(hp_min))
 			current_hp = full_hp
 		elif typeof(obj.hp) == TYPE_DICTIONARY:
-			if obj.hp.has("min") and obj.hp.min == TYPE_REAL and obj.hp.min > 0:
+			if obj.hp.has("min") and typeof(obj.hp.min) == TYPE_REAL and obj.hp.min > 0:
 				hp_min = obj.hp.min
-			if obj.hp.has("max") and obj.hp.max == TYPE_REAL:
+			if obj.hp.has("max") and typeof(obj.hp.max) == TYPE_REAL:
 				if obj.hp.max > hp_min:
 					hp_max = obj.hp.max
 				else:
 					hp_max = hp_min
 			full_hp = int(round(rand_range(hp_min, hp_max)))
 			current_hp = full_hp
+			print(self, " has HP ", full_hp)
 			
 	if obj.has("money"):
 		var money_min := 0.0
@@ -46,9 +47,9 @@ func init(obj: Dictionary) -> void:
 				money_min = obj.money
 			money = int(round(money_min))
 		elif typeof(obj.money) == TYPE_DICTIONARY:
-			if obj.money.has("min") and obj.money.min == TYPE_REAL and obj.money.min > 0:
+			if obj.money.has("min") and typeof(obj.money.min) == TYPE_REAL and obj.money.min > 0:
 				money_min = obj.money.min
-			if obj.money.has("max") and obj.money.max == TYPE_REAL:
+			if obj.money.has("max") and typeof(obj.money.max) == TYPE_REAL:
 				money_max = obj.money.max
 				if money_max < money_min:
 					money_max = money_min
@@ -74,7 +75,7 @@ func _on_VisibilityNotifier2D_screen_exited():
 func receive_damage(damage_amount: int) -> void:
 	current_hp -= damage_amount
 	if current_hp < 0:
-		current_hp = 0 
+		current_hp = 0
 	$HPBarUI.update_health(float(current_hp) / float(full_hp) * 100)
 	if current_hp <= 0:
 		Signals.emit_signal("killed", self, money)

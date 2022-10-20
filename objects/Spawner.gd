@@ -33,8 +33,8 @@ func _ready():
 
 
 func on_objects_ready(initiated_objects: Array) -> void:
-#	print(initiated_objects)
 	objects = initiated_objects
+	print(objects)
 
 
 func on_world_stopped():

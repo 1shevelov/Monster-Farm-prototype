@@ -16,16 +16,17 @@ func init(obj: Dictionary) -> void:
 		var money_min := 0.0
 		var money_max := 0.0
 		if typeof(obj.money) == TYPE_REAL:
-			money_min = obj.money
-			money_max = obj.money
+			if (obj.money) > 0:
+				money_min = obj.money
+			money = int(round(money_min))
 		elif typeof(obj.money) == TYPE_DICTIONARY:
-			if obj.money.has("min"):
+			if obj.money.has("min") and typeof(obj.money.min) == TYPE_REAL and obj.money.min > 0:
 				money_min = obj.money.min
-			if obj.money.has("max"):
+			if obj.money.has("max") and typeof(obj.money.max) == TYPE_REAL:
 				money_max = obj.money.max
-		if money_min >= 0 and money_max >= money_min:
-# warning-ignore:narrowing_conversion
-			money = round(rand_range(money_min, money_max))
+				if money_max < money_min:
+					money_max = money_min
+			money = int(round(rand_range(money_min, money_max)))
 
 
 func _physics_process(_delta):
