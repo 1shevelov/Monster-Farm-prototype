@@ -37,7 +37,6 @@ func init(obj: Dictionary) -> void:
 					hp_max = hp_min
 			full_hp = int(round(rand_range(hp_min, hp_max)))
 			current_hp = full_hp
-			print(self, " has HP ", full_hp)
 			
 	if obj.has("money"):
 		var money_min := 0.0

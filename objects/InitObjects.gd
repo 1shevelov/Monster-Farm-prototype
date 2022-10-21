@@ -1,64 +1,123 @@
 # initialises game objects
-# and sends an array of obgects' dictionaries to Spawner
+# and sends an array of objects' dictionaries to Spawner
 
 
 extends GDScript
 
-const objects_files := [
+const HP := "hp"
+const MONEY := "money"
+const TYPE := "type"
+const MIN := "min"
+const MAX := "max"
+const IMAGE := "image"
+
+# values used to replace wrong ones
+const MIN_VALUES := {
+	HP: 1,
+	MONEY: 0
+}
+
+const COIN := "Coin"
+const ONEHITMOB := "OneHitMob"
+const OBSTACLE := "Obstacle"
+
+const OBJECTS_FILES := [
 	"trimob.json",
 	"big_stone.json",
 	"treasure_chest.json"]
-const objects: Array = []
+const OBJECTS: Array = []
 
-#const obstacle_scene: String = Resources.objects_scenes + "Obstacle.tscn"
+const WEAPONS_FILE := "weapons.json"
+var ALL_WEAPONS: Dictionary
 
 
 func load_all_objects() -> void:
-	for i in objects_files.size():
-		objects.append(load_object(objects_files[i]))
-		if not validate_object(objects[i]):
-			objects.pop_back()
-#		else:
-#			init_object(objects[i])
-			
-	Signals.emit_signal("objects_ready", objects)
+	for file in OBJECTS_FILES:
+		OBJECTS.append(load_JSON(file))
+	for each_obj in OBJECTS:
+		validate_object(each_obj)
+	ALL_WEAPONS = load_JSON(WEAPONS_FILE)
+
+	
+	Signals.emit_signal("objects_ready", OBJECTS)
 
 
-func validate_object(_object: Dictionary) -> bool:
-#	for each type of object validate the presence of the necessary properties
-#	and values
-#		print(object)
-	return true
+func validate_object(obj: Dictionary) -> void:
+	if obj.has(TYPE) and typeof(obj[TYPE]) == TYPE_STRING:
+		match obj.type:
+			COIN:
+				validate_prop(obj, MONEY, true)
+				validate_image(obj)
+			OBSTACLE:
+				validate_prop(obj, HP, true)
+				validate_prop(obj, MONEY, false)
+				validate_image(obj)
+			ONEHITMOB:
+				validate_prop(obj, MONEY, false)
+				validate_image(obj)
+			_:
+				print("Object type unknown: ", obj)
+	else:
+		print("Obj has no \"type\" prop", obj)
 
 
-#func init_object(object: Dictionary) -> void:
-##	make scene
-#	match object.type:
-#		"obstacle":
-#			build_obstacle_node(object)
-#		_:
-#			print("Object type = ", object.type)
+# TODO
+func validate_image(obj) -> void:
+	if obj.has(IMAGE) and typeof(obj[IMAGE]) == TYPE_STRING:
+		# load image
+		# check size
+		pass
+	else:
+		print("Wrong or absent %s prop in %s", [IMAGE, obj])
 
 
-#func build_obstacle_node(obstacle: Dictionary) -> void:
-#	var new_obstacle: Node2D = load(obstacle_scene).instance()
-#	new_obstacle.init(obstacle)
-#	pack_scene(new_obstacle)
+# if wrong or missed prop or value:
+#	mandatory					- true		- false
+#	------------------------------------------------------------
+#	prop missed		 			- fix	 	- skip
+#	prop has wrong type			- fix		- skip
+#	wrong values or subprops	- fix		- fix
+#		* fixing always by substituting with min value
+func validate_prop(obj, prop: String, mandatory: bool) -> void:
+	if obj.has(prop):
+		match typeof(obj[prop]):
+			TYPE_REAL:
+				# should be >= MIN_VALUES
+				if obj[prop] < MIN_VALUES[prop]:
+					print("Wrong %s in %s", [prop, obj])
+					obj[prop] = MIN_VALUES[prop]
+			TYPE_DICTIONARY:
+				# should have MIN and MAX properties of type number only
+				# MIN >= MIN_VALUES & MAX >= MIN
+				if not obj[prop].has(MIN) or typeof(obj[prop][MIN]) != TYPE_REAL \
+				or obj[prop][MIN] < MIN_VALUES[prop]:
+					print("Wrong %s.%s in %s", [prop, MIN, obj])
+					obj[prop][MIN] = MIN_VALUES[prop]
+				if not obj[prop].has(MAX) or typeof(obj[prop][MAX]) != TYPE_REAL \
+				or obj[prop][MAX] < obj[prop][MIN]:
+					print("Wrong %s.%s in %s", [prop, MAX, obj])
+					obj[prop][MAX] = obj[prop][MIN]
+			TYPE_ARRAY:
+				# should have at least one value
+				# values of type number only, each >= MIN_VALUES
+				if obj[prop].length == 0:
+					obj[prop] = MIN_VALUES[prop]
+				for val in obj[prop]:
+					if typeof(val) != TYPE_REAL or val < MIN_VALUES[prop]:
+						val = MIN_VALUES[prop]
+			_:
+				print("Wrong type of %s in %s", [prop, obj])
+				if mandatory:
+					obj[prop] = MIN_VALUES[prop]
+				else:
+					# remove property of the wrong type if not mandatory
+					obj.erase(prop)
+	elif mandatory:
+		print("No mandatory %s prop found in %s", [prop, obj])
+		obj[prop] = MIN_VALUES[prop]
 
 
-#func pack_scene(packed_node: Node2D) -> void:
-#	var new_pack = PackedScene.new()
-#	var res = new_pack.pack(packed_node)
-#	if res == OK:
-#		var pack_path := "user://object_chest.scn"
-#		var error = ResourceSaver.save(pack_path, new_pack)
-#		if error == OK:
-#			Signals.emit_signal("object_created", pack_path)
-#		else:
-#			push_error("Error saving " + pack_path)
-
-
-func load_object(object_file: String) -> Dictionary:
+func load_JSON(object_file: String) -> Dictionary:
 	var file: File = File.new()
 	var full_file_name: String = Resources.objects + object_file
 	var err: int = file.open(full_file_name, File.READ)
