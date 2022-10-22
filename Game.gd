@@ -6,6 +6,7 @@ onready var import_objects_instance := IMPORT_OBJECTS.new()
 
 func _ready():
 	import_objects_instance.load_all_objects()
+	$Avatar.init(import_objects_instance.get_avatar())
 	
 	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Master"), 0)
 	randomize()

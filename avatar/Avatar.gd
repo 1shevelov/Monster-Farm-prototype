@@ -26,7 +26,7 @@ onready var death_sound := $DeathSound
 
 #var attack_num := 0
 #const STONE_ATTACK_NUM = 3
-var attack_damage := 10
+#var attack_damage := 10
 var attacked_node: Node2D = null
 
 
@@ -39,6 +39,10 @@ func _ready():
 	Signals.connect("killed", self, "on_killed")
 # warning-ignore:return_value_discarded
 	Signals.connect("one_hit_killed", self, "on_one_hit_killed")
+
+
+func init(avatar_obj: Dictionary) -> void:
+	print_debug(avatar_obj)
 
 
 func _physics_process(delta):

@@ -1,0 +1,9 @@
+{
+	"name": "swordsman",
+	"hp": {
+		"min": 180,
+		"max": 250
+	},
+	"money": 0,
+	"weapon": "sword"
+}

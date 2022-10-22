@@ -1,12 +1,14 @@
 {
-	"stick": {
+	"0": {
+		"name": "stick",
 		"damage": {
 			"min": 5,
 			"max": 8
 		},
 		"delay": 1.0
 	},
-	"sword": {
+	"1": {
+		"name": "sword",
 		"damage": {
 			"min": 15,
 			"max": 25
@@ -14,11 +16,13 @@
 		"delay": 2.0,
 		"probability": 0.9,
 	},
-	"trimob's talons": {
+	"2": {
+		"name": "trimob's talons",
 		"damage": 5,
 		"one-time": true
 	},
-	"treasure chest's explosion": {
+	"3": {
+		"name": "treasure chest's explosion",
 		"damage": {
 			"min": 45,
 			"max": 79

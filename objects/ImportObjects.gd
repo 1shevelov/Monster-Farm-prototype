@@ -10,6 +10,7 @@ const TYPE := "type"
 const MIN := "min"
 const MAX := "max"
 const IMAGE := "image"
+const WEAPON := "weapon"
 
 # values used to replace wrong ones
 const MIN_VALUES := {
@@ -23,6 +24,10 @@ const OBSTACLE := "Obstacle"
 
 const ASSETS_DIR := "res://assets/objects/"
 const SCENES_DIR := "res://objects/"
+
+const AVATAR_FILE := "avatar.json"
+var avatar_obj: Dictionary
+
 const OBJECTS_FILES := [
 	"trimob.json",
 	"big_stone.json",
@@ -30,37 +35,81 @@ const OBJECTS_FILES := [
 const OBJECTS: Array = []
 
 const WEAPONS_FILE := "weapons.json"
-var ALL_WEAPONS: Dictionary
+var weapons: Array = []
+
+
+func get_avatar() -> Dictionary:
+	return avatar_obj
 
 
 func load_all_objects() -> void:
+	load_and_validate_weapons()
+	
 	for file in OBJECTS_FILES:
 		OBJECTS.append(load_JSON(file))
 	for each_obj in OBJECTS:
 		validate_object(each_obj)
-	ALL_WEAPONS = load_JSON(WEAPONS_FILE)
+	
+	load_and_validate_avatar()
 
 	
 	Signals.emit_signal("objects_ready", OBJECTS)
+
+
+func load_and_validate_weapons() -> void:
+	var weapons_obj = load_JSON(WEAPONS_FILE)
+	# check all weapons
+	weapons = weapons_obj.values()
+
+
+func load_and_validate_avatar() -> void:
+	avatar_obj = load_JSON(AVATAR_FILE)
+	validate_num_prop(avatar_obj, HP, true)
+	validate_num_prop(avatar_obj, MONEY, false)
+	# can avatar start with no weapon (0 damage)? how to handle one-hit-mobs?
+	validate_string_prop(avatar_obj, WEAPON, false)
 
 
 func validate_object(obj: Dictionary) -> void:
 	if obj.has(TYPE) and typeof(obj[TYPE]) == TYPE_STRING:
 		match obj.type:
 			COIN:
-				validate_prop(obj, MONEY, true)
+				validate_num_prop(obj, MONEY, true)
 				validate_image(obj)
 			OBSTACLE:
-				validate_prop(obj, HP, true)
-				validate_prop(obj, MONEY, false)
+				validate_num_prop(obj, HP, true)
+				validate_num_prop(obj, MONEY, false)
 				validate_image(obj)
+				validate_string_prop(obj, WEAPON, false)
 			ONEHITMOB:
-				validate_prop(obj, MONEY, false)
+				validate_num_prop(obj, MONEY, false)
 				validate_image(obj)
+				validate_string_prop(obj, WEAPON, false)
 			_:
 				print("Object type unknown: ", obj)
 	else:
 		print("Obj has no \"type\" prop ", obj)
+
+
+# TODO: allow "weapon" prop to have a 
+# String value - look for weapon dic in weapons array and write weapon dic in the obj
+# Dictionary value - validate obj
+func validate_string_prop(obj: Dictionary, prop: String, mandatory: bool) -> void:
+	if obj.has(prop) and typeof(obj[prop]) == TYPE_STRING:
+		match prop:
+			WEAPON:
+				var set := false
+				for w in weapons:
+					if w.name == obj[WEAPON]:
+						obj[WEAPON] = w
+						set = true
+						break;
+				if not set:
+					obj[WEAPON] = weapons[0]
+					print("ERROR in weapon of ", obj)
+					print("Weapon %s was used", weapons[0].name)
+	elif mandatory:
+		print("ERROR: No mandatory %s prop found in %s", [prop, obj])
 
 
 # TODO
@@ -82,7 +131,7 @@ func validate_image(obj) -> void:
 #	prop has wrong type			- fix		- skip
 #	wrong values or subprops	- fix		- fix
 #		* fixing always by substituting with min value
-func validate_prop(obj, prop: String, mandatory: bool) -> void:
+func validate_num_prop(obj, prop: String, mandatory: bool) -> void:
 	if obj.has(prop):
 		match typeof(obj[prop]):
 			TYPE_REAL:
@@ -137,7 +186,7 @@ func load_JSON(object_file: String) -> Dictionary:
 	var json_string: String = file.get_as_text()
 	var str_err: String = validate_json(json_string)
 	if str_err:
-		print_debug("Invalid JSON data loading settings, error: ", str_err)
+		print_debug("Invalid JSON data, error: ", str_err)
 		file.close()
 		return {}
 	var data: Dictionary = parse_json(json_string)
