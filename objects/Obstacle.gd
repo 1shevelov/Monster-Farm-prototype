@@ -15,7 +15,7 @@ func _ready():
 
 func init(obj: Dictionary) -> void:
 	if obj.has("image"):
-		$Sprite.set_texture(load(Resources.objects + obj.image))
+		$Sprite.set_texture(load(obj.image))
 		var sprite_size: Vector2 = $Sprite.get_texture().get_size()
 		$Collision/CollisionShape2D.get_shape().set_extents(sprite_size / 1.5)
 		

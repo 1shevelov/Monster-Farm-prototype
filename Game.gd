@@ -1,11 +1,11 @@
 extends Node2D
 
-const Objects: GDScript = preload("res://objects/InitObjects.gd")
-onready var objects_instance := Objects.new()
+const IMPORT_OBJECTS: GDScript = preload("res://objects/ImportObjects.gd")
+onready var import_objects_instance := IMPORT_OBJECTS.new()
 
 
 func _ready():
-	objects_instance.load_all_objects()
+	import_objects_instance.load_all_objects()
 	
 	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Master"), 0)
 	randomize()

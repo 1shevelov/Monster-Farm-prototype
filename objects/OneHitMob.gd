@@ -7,7 +7,7 @@ var money: int
 
 func init(obj: Dictionary) -> void:
 	if obj.has("image"):
-		$Sprite.set_texture(load(Resources.objects + obj.image))
+		$Sprite.set_texture(load(obj.image))
 		var sprite_size: Vector2 = $Sprite.get_texture().get_size()
 #		if sprite_size.x > sprite_size.y:
 		$Collision/CollisionShape2D.get_shape().set_radius(sprite_size.x / 1.5)

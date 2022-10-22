@@ -21,6 +21,8 @@ const COIN := "Coin"
 const ONEHITMOB := "OneHitMob"
 const OBSTACLE := "Obstacle"
 
+const ASSETS_DIR := "res://assets/objects/"
+const SCENES_DIR := "res://objects/"
 const OBJECTS_FILES := [
 	"trimob.json",
 	"big_stone.json",
@@ -58,12 +60,14 @@ func validate_object(obj: Dictionary) -> void:
 			_:
 				print("Object type unknown: ", obj)
 	else:
-		print("Obj has no \"type\" prop", obj)
+		print("Obj has no \"type\" prop ", obj)
 
 
 # TODO
 func validate_image(obj) -> void:
 	if obj.has(IMAGE) and typeof(obj[IMAGE]) == TYPE_STRING:
+		# set full image path for loading
+		obj[IMAGE] = ASSETS_DIR + obj[IMAGE]
 		# load image
 		# check size
 		pass
@@ -119,7 +123,7 @@ func validate_prop(obj, prop: String, mandatory: bool) -> void:
 
 func load_JSON(object_file: String) -> Dictionary:
 	var file: File = File.new()
-	var full_file_name: String = Resources.objects + object_file
+	var full_file_name: String = ASSETS_DIR + object_file
 	var err: int = file.open(full_file_name, File.READ)
 	if err == 7: # file not found
 		file.close()
