@@ -24,7 +24,7 @@ const DAMAGE_MAXIMUM_VALUES := 100
 # if missed, the weapon is considered one-time
 # 0.0 < delay <= DELAY_MAX, in seconds
 const DELAY := "delay"
-const DELAY_MAXIMUM := "100.0"
+const DELAY_MAXIMUM := 100.0
 
 # if true or "1" delay is ignored
 # true, false, "1" or "0"
@@ -41,16 +41,17 @@ var weapon_name := ""
 var damage_min := 0
 var damage_max := 0
 var damage_array := []
-var probability := 0.0
-var delay := 0.0
+var probability := 1.0
+var delay := 1.0
 var one_time := false
 #var description := ""
 #var damage_type = one of DAMAGE_TYPES enum
 #var ui_picture = $Picture
 
 
+# [min_val, max_val]
 func validate_json_int(val, min_val: int, max_val: int, error_term: String) -> int:
-	var error_val = min_val - 1
+	var error_val := min_val - 1
 	match typeof(val):
 		TYPE_REAL:
 			if val < min_val or val > max_val:
@@ -72,6 +73,29 @@ func validate_json_int(val, min_val: int, max_val: int, error_term: String) -> i
 			return error_val
 
 
+# (min_val, max_val], e.g. val != 0.0
+func validate_json_float(val, min_val: float, max_val: float, error_term: String) -> float:
+	var error_val := min_val - 1.0
+	match typeof(val):
+		TYPE_REAL:
+			if val <= min_val or val > max_val:
+				print("Invalid %s value %s", [error_term, val])
+				return error_val
+			return val
+		TYPE_STRING:
+			if val.is_valid_float():
+				var fl_val: float = val.to_float()
+				if fl_val < min_val or fl_val > max_val:
+					print("Invalid %s value %s", [error_term, fl_val])
+					return error_val
+				return fl_val
+			else:
+				print("Invalid %s value \"%s\"", [error_term, val])
+				return error_val
+		_:
+			print("Invalid type of %s value \"%s\"", [error_term, val])
+			return error_val
+
 
 func init(from_json: Dictionary) -> bool:
 	if from_json.has(NAME) and \
@@ -81,7 +105,7 @@ func init(from_json: Dictionary) -> bool:
 		temp_str = temp_str.strip_edges()
 		weapon_name = temp_str.left(NAME_MAXIMUM_LENGTH)
 	else:
-		print("Invalid weapon name in ", from_json)
+		print("Invalid weapon %s in %s", [NAME, from_json])
 		return false
 	
 	if from_json.has(DAMAGE):
@@ -124,14 +148,52 @@ func init(from_json: Dictionary) -> bool:
 							print("Too many %s values in %s. Array was truncated.", \
 							[DAMAGE, from_json[NAME]])
 							break;
+				if damage_array.empty():
+					print("No valid %s values in %s", [DAMAGE, from_json[NAME]])
+					return false
+			_:
+				print("Invalid type of %s in %s", [DAMAGE, from_json])
+				return false
+	else:
+		print("Missed mandatory %s value in %s", [DAMAGE, from_json])
+		return false
 	
-	# TODO: finish validating these values
-#	probability = weapon_dic.probability
-#	delay = weapon_dic.delay
+	if from_json.has(PROBABILITY):
+		if typeof(from_json[PROBABILITY]) == TYPE_REAL \
+		or typeof(from_json[PROBABILITY]) == TYPE_STRING:
+				var validation_res :=  \
+				validate_json_float(from_json[PROBABILITY], 0.0, 1.0, PROBABILITY)
+				if validation_res == -1.0:
+					return false
+				probability = validation_res
+		else:
+			print("Wrong type of %s value in %s. Using default value.", [PROBABILITY, from_json])
+	else:
+		print("%s value missed in %s. Using default value.", [PROBABILITY, from_json])
+			
+	if from_json.has(ONE_TIME):
+		if typeof(ONE_TIME) == TYPE_BOOL:
+			one_time = from_json[ONE_TIME]
+		elif typeof(ONE_TIME) == TYPE_REAL or typeof(ONE_TIME) == TYPE_STRING:
+			one_time = bool(from_json[ONE_TIME])
+		else:
+			print("Wrong type of %s in %s", [ONE_TIME, from_json])
+			
+	if from_json.has(DELAY):
+		if typeof(from_json[DELAY]) == TYPE_REAL \
+		or typeof(from_json[DELAY]) == TYPE_STRING:
+				var validation_res :=  \
+				validate_json_float(from_json[DELAY], 0.0, DELAY_MAXIMUM, DELAY)
+				if validation_res == -1.0:
+					return false
+				delay = validation_res
+		else:
+			print("Wrong type of %s value in %s. Using default value.", [DELAY, from_json])
+	elif not one_time:
+		print("%s value missed in %s. Using default value.", [DELAY, from_json])
 				
 	return true
 	
-	# TODO: remove scripts/Weapon.gd
 	
 func get_damage() -> int:
 #	randi() % 100 + 1 # Returns random integer between 1 and 100
