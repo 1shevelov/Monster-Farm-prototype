@@ -34,7 +34,7 @@ func _ready():
 
 func on_objects_ready(initiated_objects: Array) -> void:
 	objects = initiated_objects
-	print_debug(objects)
+#	print_debug(objects)
 
 
 func on_world_stopped():

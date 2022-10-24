@@ -43,6 +43,10 @@ func _ready():
 
 func init(avatar_obj: Dictionary) -> void:
 	print_debug(avatar_obj)
+	if avatar_obj.has("weapon"):
+		$Weapon.init(avatar_obj.weapon)
+#		$Weapon.show()
+	
 
 
 func _physics_process(delta):
@@ -155,7 +159,9 @@ func kill_avatar():
 
 
 func _on_AttackTimer_timeout():
-	attacked_node.receive_damage(attack_damage)
+	var damage = $Weapon.get_damage()
+	print("Avatar is attacking with the %s for %s" % [$Weapon.weapon_name, damage])
+	attacked_node.receive_damage(damage)
 
 
 func on_killed(killed_node: Node2D, money_given: int = 0) -> void:

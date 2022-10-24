@@ -36,6 +36,11 @@ const OBJECTS: Array = []
 
 const WEAPONS_FILE := "weapons.json"
 var weapons: Array = []
+const WEAPON_SCENE := SCENES_DIR + "Weapon.tscn"
+var weapon_scene: PackedScene #= preload(WEAPON_SCENE)
+var weapon_instance
+const NAME = "name"
+
 
 
 func get_avatar() -> Dictionary:
@@ -57,9 +62,20 @@ func load_all_objects() -> void:
 
 
 func load_and_validate_weapons() -> void:
-	var weapons_obj = load_JSON(WEAPONS_FILE)
-	# check all weapons
+	var weapons_obj: Dictionary = load_JSON(WEAPONS_FILE)
+	if weapons_obj.empty():
+		print("No weapons")
+		return
+	weapon_scene = load(WEAPON_SCENE)
 	weapons = weapons_obj.values()
+	for w in weapons.size():
+		weapon_instance = weapon_scene.instance()
+		if not weapon_instance.init(weapons[w]):
+			print("Weapon \"%s\" had errors. Skipped" % weapons[w][NAME])
+			weapons[w].clear()
+#		else:
+#			print("Weapon \"%s\" is OK" % weapons[w][NAME])
+		weapon_instance.queue_free()
 
 
 func load_and_validate_avatar() -> void:
@@ -107,9 +123,9 @@ func validate_string_prop(obj: Dictionary, prop: String, mandatory: bool) -> voi
 				if not set:
 					obj[WEAPON] = weapons[0]
 					print("ERROR in weapon of ", obj)
-					print("Weapon %s was used", weapons[0].name)
+					print("Weapon %s was used" % weapons[0].name)
 	elif mandatory:
-		print("ERROR: No mandatory %s prop found in %s", [prop, obj])
+		print("ERROR: No mandatory %s prop found in %s" % [prop, obj])
 
 
 # TODO
@@ -121,7 +137,7 @@ func validate_image(obj) -> void:
 		# check size
 		pass
 	else:
-		print("Wrong or absent %s prop in %s", [IMAGE, obj])
+		print("Wrong or absent %s prop in %s" % [IMAGE, obj])
 
 
 # if wrong or missed prop or value:
@@ -137,18 +153,18 @@ func validate_num_prop(obj, prop: String, mandatory: bool) -> void:
 			TYPE_REAL:
 				# should be >= MIN_VALUES
 				if obj[prop] < MIN_VALUES[prop]:
-					print("Wrong %s in %s", [prop, obj])
+					print("Wrong %s in %s" % [prop, obj])
 					obj[prop] = MIN_VALUES[prop]
 			TYPE_DICTIONARY:
 				# should have MIN and MAX properties of type number only
 				# MIN >= MIN_VALUES & MAX >= MIN
 				if not obj[prop].has(MIN) or typeof(obj[prop][MIN]) != TYPE_REAL \
 				or obj[prop][MIN] < MIN_VALUES[prop]:
-					print("Wrong %s.%s in %s", [prop, MIN, obj])
+					print("Wrong %s.%s in %s" % [prop, MIN, obj])
 					obj[prop][MIN] = MIN_VALUES[prop]
 				if not obj[prop].has(MAX) or typeof(obj[prop][MAX]) != TYPE_REAL \
 				or obj[prop][MAX] < obj[prop][MIN]:
-					print("Wrong %s.%s in %s", [prop, MAX, obj])
+					print("Wrong %s.%s in %s" % [prop, MAX, obj])
 					obj[prop][MAX] = obj[prop][MIN]
 			TYPE_ARRAY:
 				# should have at least one value
@@ -159,17 +175,18 @@ func validate_num_prop(obj, prop: String, mandatory: bool) -> void:
 					if typeof(val) != TYPE_REAL or val < MIN_VALUES[prop]:
 						val = MIN_VALUES[prop]
 			_:
-				print("Wrong type of %s in %s", [prop, obj])
+				print("Wrong type of %s in %s" % [prop, obj])
 				if mandatory:
 					obj[prop] = MIN_VALUES[prop]
 				else:
 					# remove property of the wrong type if not mandatory
 					obj.erase(prop)
 	elif mandatory:
-		print("No mandatory %s prop found in %s", [prop, obj])
+		print("No mandatory %s prop found in %s" % [prop, obj])
 		obj[prop] = MIN_VALUES[prop]
 
 
+# TODO: move this method to json class
 func load_JSON(object_file: String) -> Dictionary:
 	var file: File = File.new()
 	var full_file_name: String = ASSETS_DIR + object_file
@@ -186,7 +203,7 @@ func load_JSON(object_file: String) -> Dictionary:
 	var json_string: String = file.get_as_text()
 	var str_err: String = validate_json(json_string)
 	if str_err:
-		print_debug("Invalid JSON data, error: ", str_err)
+		print_debug("Invalid JSON data, error: " % str_err)
 		file.close()
 		return {}
 	var data: Dictionary = parse_json(json_string)
