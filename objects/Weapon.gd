@@ -49,55 +49,6 @@ var one_time := false
 #var ui_picture = $Picture
 
 
-# TODO: move these two methods to json class
-# [min_val, max_val]
-func validate_json_int(val, min_val: int, max_val: int, error_term: String) -> int:
-	var error_val := min_val - 1
-	match typeof(val):
-		TYPE_REAL:
-			if val < min_val or val > max_val:
-				print("Invalid %s value %s" % [error_term, val])
-				return error_val
-			return int(val)
-		TYPE_STRING:
-			if val.is_valid_integer():
-				var int_val: int = val.to_int()
-				if int_val < min_val or int_val > max_val:
-					print("Invalid %s value %s" % [error_term, int_val])
-					return error_val
-				return int_val
-			else:
-				print("Invalid %s value \"%s\"" % [error_term, val])
-				return error_val
-		_:
-			print("Invalid type of %s value \"%s\"" % [error_term, val])
-			return error_val
-
-
-# (min_val, max_val], e.g. val != 0.0
-func validate_json_float(val, min_val: float, max_val: float, error_term: String) -> float:
-	var error_val := min_val - 1.0
-	match typeof(val):
-		TYPE_REAL:
-			if val <= min_val or val > max_val:
-				print("Invalid %s value %s" % [error_term, val])
-				return error_val
-			return val
-		TYPE_STRING:
-			if val.is_valid_float():
-				var fl_val: float = val.to_float()
-				if fl_val < min_val or fl_val > max_val:
-					print("Invalid %s value %s" % [error_term, fl_val])
-					return error_val
-				return fl_val
-			else:
-				print("Invalid %s value \"%s\"" % [error_term, val])
-				return error_val
-		_:
-			print("Invalid type of %s value \"%s\"" % [error_term, val])
-			return error_val
-
-
 func init(from_json: Dictionary) -> bool:
 	if from_json.has(NAME) and \
 	(typeof(from_json[NAME]) == TYPE_STRING or typeof(from_json[NAME]) == TYPE_REAL):
@@ -113,7 +64,7 @@ func init(from_json: Dictionary) -> bool:
 		match typeof(from_json[DAMAGE]):
 			TYPE_REAL, TYPE_STRING:
 				var validation_res :=  \
-				validate_json_int(from_json[DAMAGE], 0, DAMAGE_MAXIMUM, DAMAGE)
+				Json.validate_int(from_json[DAMAGE], 0, DAMAGE_MAXIMUM, DAMAGE)
 				if validation_res == -1:
 					return false
 				damage_min = validation_res
@@ -121,13 +72,13 @@ func init(from_json: Dictionary) -> bool:
 			TYPE_DICTIONARY:
 				if from_json[DAMAGE].has(DAMAGE_MIN):
 					var validation_res :=  \
-					validate_json_int(from_json[DAMAGE][DAMAGE_MIN], 0, DAMAGE_MAXIMUM, DAMAGE)
+					Json.validate_int(from_json[DAMAGE][DAMAGE_MIN], 0, DAMAGE_MAXIMUM, DAMAGE)
 					if validation_res == -1:
 						return false
 					damage_min = validation_res
 				if from_json[DAMAGE].has(DAMAGE_MAX):
 					var validation_res :=  \
-					validate_json_int(from_json[DAMAGE][DAMAGE_MAX], 0, DAMAGE_MAXIMUM, DAMAGE)
+					Json.validate_int(from_json[DAMAGE][DAMAGE_MAX], 0, DAMAGE_MAXIMUM, DAMAGE)
 					if validation_res == -1:
 						return false
 					damage_max = validation_res
@@ -140,7 +91,7 @@ func init(from_json: Dictionary) -> bool:
 					return false
 				var validation_res: int
 				for val in from_json[DAMAGE]:
-					validation_res = validate_json_int(val, 0, DAMAGE_MAXIMUM, DAMAGE)
+					validation_res = Json.validate_int(val, 0, DAMAGE_MAXIMUM, DAMAGE)
 					if validation_res == -1:
 						print("Invalid %s value in weapon %s" % [DAMAGE, from_json[NAME]])
 					else:
@@ -163,7 +114,7 @@ func init(from_json: Dictionary) -> bool:
 		if typeof(from_json[PROBABILITY]) == TYPE_REAL \
 		or typeof(from_json[PROBABILITY]) == TYPE_STRING:
 				var validation_res :=  \
-				validate_json_float(from_json[PROBABILITY], 0.0, 1.0, PROBABILITY)
+				Json.validate_float(from_json[PROBABILITY], 0.0, 1.0, PROBABILITY)
 				if validation_res == -1.0:
 					return false
 				probability = validation_res
@@ -185,7 +136,7 @@ func init(from_json: Dictionary) -> bool:
 		if typeof(from_json[DELAY]) == TYPE_REAL \
 		or typeof(from_json[DELAY]) == TYPE_STRING:
 				var validation_res :=  \
-				validate_json_float(from_json[DELAY], 0.0, DELAY_MAXIMUM, DELAY)
+				Json.validate_float(from_json[DELAY], 0.0, DELAY_MAXIMUM, DELAY)
 				if validation_res == -1.0:
 					return false
 				delay = validation_res

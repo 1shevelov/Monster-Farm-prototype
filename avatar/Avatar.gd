@@ -164,9 +164,11 @@ func _on_AttackTimer_timeout():
 	attacked_node.receive_damage(damage)
 
 
-func on_killed(killed_node: Node2D, money_given: int = 0) -> void:
+func on_killed(killed_node: Node2D, one_time_damage: int = 0, money_given: int = 0) -> void:
 	if attacked_node == killed_node:
 		print(killed_node, " killed")
+		if one_time_damage > 0:
+			print("One-time damage: ", one_time_damage)
 		add_money(money_given)
 		$AttackTimer.stop()
 		state = RUN

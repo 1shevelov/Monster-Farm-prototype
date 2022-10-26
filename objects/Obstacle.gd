@@ -53,6 +53,9 @@ func init(obj: Dictionary) -> void:
 				if money_max < money_min:
 					money_max = money_min
 		money = int(round(rand_range(money_min, money_max)))
+		
+	if obj.has("weapon"):
+		$Weapon.init(obj.weapon)
 
 
 func _physics_process(_delta):
@@ -77,7 +80,10 @@ func receive_damage(damage_amount: int) -> void:
 		current_hp = 0
 	$HPBarUI.update_health(float(current_hp) / float(full_hp) * 100)
 	if current_hp <= 0:
-		Signals.emit_signal("killed", self, money)
+		if $Weapon.one_time:
+			Signals.emit_signal("killed", self, $Weapon.get_damage(), money)
+		else:
+			Signals.emit_signal("killed", self, 0, money)
 		if money > 0 and not Globals.SILENT_MODE:
 			money_sound.play()
 #		die effect or sound?
