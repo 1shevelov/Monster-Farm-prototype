@@ -19,7 +19,7 @@
 [ext_resource path="res://assets/avatar/adventurer-air-attack2-00.png" type="Texture" id=17]
 [ext_resource path="res://assets/avatar/adventurer-air-attack2-01.png" type="Texture" id=18]
 [ext_resource path="res://assets/avatar/adventurer-air-attack2-02.png" type="Texture" id=19]
-[ext_resource path="res://HUD/HPBarUI.tscn" type="PackedScene" id=20]
+[ext_resource path="res://objects/hp.tscn" type="PackedScene" id=20]
 [ext_resource path="res://assets/avatar/adventurer-idle-00.png" type="Texture" id=21]
 [ext_resource path="res://assets/avatar/adventurer-idle-01.png" type="Texture" id=22]
 [ext_resource path="res://assets/avatar/adventurer-idle-02.png" type="Texture" id=23]
@@ -100,10 +100,10 @@ volume_db = -20.0
 stream = ExtResource( 9 )
 volume_db = -25.0
 
-[node name="HPBarUI" parent="." instance=ExtResource( 20 )]
-
 [node name="Weapon" parent="." instance=ExtResource( 29 )]
 visible = false
+
+[node name="hp" parent="." instance=ExtResource( 20 )]
 
 [connection signal="body_entered" from="Area2D" to="." method="_on_Area2D_body_entered"]
 [connection signal="body_exited" from="Area2D" to="." method="_on_Area2D_body_exited"]

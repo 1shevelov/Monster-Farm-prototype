@@ -45,8 +45,11 @@ func init(avatar_obj: Dictionary) -> void:
 	print_debug(avatar_obj)
 	if avatar_obj.has("weapon"):
 		$Weapon.init(avatar_obj.weapon)
-#		$Weapon.show()
-	
+	if avatar_obj.has("hp"):
+		$hp.init(avatar_obj.hp)
+		$hp.show_ui()
+	else:
+		print("ERROR: Avatar has no hp")
 
 
 func _physics_process(delta):
