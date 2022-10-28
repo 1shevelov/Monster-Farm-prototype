@@ -30,8 +30,8 @@ func show_ui() -> void:
 		hp_ui.activate(true, get_parent().get_global_position())
 
 
-func update_hp(change: int) -> void:
-	current_hp -= change
+func receive_damage(amount: int) -> void:
+	current_hp -= amount
 	if not is_dead():
 		hp_ui.update_value(float(current_hp) / float(full_hp) * 100)
 	else:

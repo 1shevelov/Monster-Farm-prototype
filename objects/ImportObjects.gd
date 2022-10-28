@@ -22,7 +22,7 @@ const COIN := "Coin"
 const ONEHITMOB := "OneHitMob"
 const OBSTACLE := "Obstacle"
 
-const ASSETS_DIR := "res://assets/objects/"
+const OBJECTS_RES_DIR := "res://assets/objects/"
 const SCENES_DIR := "res://objects/"
 
 const AVATAR_FILE := "avatar.json"
@@ -51,7 +51,7 @@ func load_all_objects() -> void:
 	load_and_validate_weapons()
 	
 	for file in OBJECTS_FILES:
-		OBJECTS.append(load_JSON(file))
+		OBJECTS.append(Json.load_file(OBJECTS_RES_DIR + file))
 	for each_obj in OBJECTS:
 		validate_object(each_obj)
 	
@@ -62,7 +62,7 @@ func load_all_objects() -> void:
 
 
 func load_and_validate_weapons() -> void:
-	var weapons_obj: Dictionary = load_JSON(WEAPONS_FILE)
+	var weapons_obj: Dictionary = Json.load_file(OBJECTS_RES_DIR + WEAPONS_FILE)
 	if weapons_obj.empty():
 		print("No weapons")
 		return
@@ -79,7 +79,7 @@ func load_and_validate_weapons() -> void:
 
 
 func load_and_validate_avatar() -> void:
-	avatar_obj = load_JSON(AVATAR_FILE)
+	avatar_obj = Json.load_file(OBJECTS_RES_DIR + AVATAR_FILE)
 	validate_num_prop(avatar_obj, HP, true)
 	validate_num_prop(avatar_obj, MONEY, false)
 	# can avatar start with no weapon (0 damage)? how to handle one-hit-mobs?
@@ -132,7 +132,7 @@ func validate_string_prop(obj: Dictionary, prop: String, mandatory: bool) -> voi
 func validate_image(obj) -> void:
 	if obj.has(IMAGE) and typeof(obj[IMAGE]) == TYPE_STRING:
 		# set full image path for loading
-		obj[IMAGE] = ASSETS_DIR + obj[IMAGE]
+		obj[IMAGE] = OBJECTS_RES_DIR + obj[IMAGE]
 		# load image
 		# check size
 		pass
@@ -186,26 +186,3 @@ func validate_num_prop(obj, prop: String, mandatory: bool) -> void:
 		obj[prop] = MIN_VALUES[prop]
 
 
-# TODO: move this method to json class
-func load_JSON(object_file: String) -> Dictionary:
-	var file: File = File.new()
-	var full_file_name: String = ASSETS_DIR + object_file
-	var err: int = file.open(full_file_name, File.READ)
-	if err == 7: # file not found
-		file.close()
-		return {}
-	elif err != 0:
-		print_debug("Error while trying to load \"%s\".\nError message: %s" \
-			% [object_file, err])
-		# TODO: GlobalScope.Error.keys()[err])
-		file.close()
-		return {}
-	var json_string: String = file.get_as_text()
-	var str_err: String = validate_json(json_string)
-	if str_err:
-		print_debug("Invalid JSON data, error: " % str_err)
-		file.close()
-		return {}
-	var data: Dictionary = parse_json(json_string)
-	file.close()
-	return data

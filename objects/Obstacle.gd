@@ -3,8 +3,7 @@ extends "../scripts/ScrollMovement.gd"
 onready var hit_sound := $HitSound
 onready var money_sound := $MoneySound
 
-var full_hp: int
-var current_hp: int
+var obstacle_name := ""
 
 var money: int
 
@@ -14,29 +13,35 @@ func _ready():
 
 
 func init(obj: Dictionary) -> void:
+	if obj.has("name"):
+		obstacle_name = obj["name"]
+		
 	if obj.has("image"):
 		$Sprite.set_texture(load(obj.image))
 		var sprite_size: Vector2 = $Sprite.get_texture().get_size()
 		$Collision/CollisionShape2D.get_shape().set_extents(sprite_size / 1.5)
 		
 	if obj.has("hp"):
-		var hp_min := 0.0
-		var hp_max := 0.0
-		if typeof(obj.hp) == TYPE_REAL:
-			if obj.hp > 0:
-				hp_min = obj.hp
-			full_hp = int(round(hp_min))
-			current_hp = full_hp
-		elif typeof(obj.hp) == TYPE_DICTIONARY:
-			if obj.hp.has("min") and typeof(obj.hp.min) == TYPE_REAL and obj.hp.min > 0:
-				hp_min = obj.hp.min
-			if obj.hp.has("max") and typeof(obj.hp.max) == TYPE_REAL:
-				if obj.hp.max > hp_min:
-					hp_max = obj.hp.max
-				else:
-					hp_max = hp_min
-			full_hp = int(round(rand_range(hp_min, hp_max)))
-			current_hp = full_hp
+		$hp.init(obj.hp)
+	else:
+		print("ERROR: Obstacle has no hp")
+#		var hp_min := 0.0
+#		var hp_max := 0.0
+#		if typeof(obj.hp) == TYPE_REAL:
+#			if obj.hp > 0:
+#				hp_min = obj.hp
+#			full_hp = int(round(hp_min))
+#			current_hp = full_hp
+#		elif typeof(obj.hp) == TYPE_DICTIONARY:
+#			if obj.hp.has("min") and typeof(obj.hp.min) == TYPE_REAL and obj.hp.min > 0:
+#				hp_min = obj.hp.min
+#			if obj.hp.has("max") and typeof(obj.hp.max) == TYPE_REAL:
+#				if obj.hp.max > hp_min:
+#					hp_max = obj.hp.max
+#				else:
+#					hp_max = hp_min
+#			full_hp = int(round(rand_range(hp_min, hp_max)))
+#			current_hp = full_hp
 			
 	if obj.has("money"):
 		var money_min := 0.0
@@ -67,7 +72,8 @@ func _on_Collision_body_entered(body: Node):
 		if not Globals.SILENT_MODE:
 			hit_sound.play()
 		Signals.emit_signal("being_attacked", self)
-		print(self, " attacked, hp= ", current_hp)
+#		print(self, " attacked, hp= ", current_hp)
+		$hp.show_ui()
 
 
 func _on_VisibilityNotifier2D_screen_exited():
@@ -75,12 +81,9 @@ func _on_VisibilityNotifier2D_screen_exited():
 
 
 func receive_damage(damage_amount: int) -> void:
-	current_hp -= damage_amount
-	if current_hp < 0:
-		current_hp = 0
-	$HPBarUI.update_health(float(current_hp) / float(full_hp) * 100)
-	if current_hp <= 0:
-		if $Weapon.one_time:
+	$hp.receive_damage(damage_amount)
+	if $hp.is_dead():
+		if $Weapon.is_one_time():
 			Signals.emit_signal("killed", self, $Weapon.get_damage(), money)
 		else:
 			Signals.emit_signal("killed", self, 0, money)

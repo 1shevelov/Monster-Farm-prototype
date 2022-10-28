@@ -28,6 +28,6 @@
 			"max": 79
 		},
 		"one-time": true,
-		"probability": 0.05
+		"probability": 0.1
 	}
 }
