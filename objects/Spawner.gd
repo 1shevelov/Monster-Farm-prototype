@@ -24,7 +24,7 @@ func _ready():
 # warning-ignore:return_value_discarded
 	Signals.connect("attack_finished", self, "on_attack_finished")
 # warning-ignore:return_value_discarded
-	Signals.connect("objects_ready", self, "on_objects_ready")
+#	Signals.connect("objects_ready", self, "on_objects_ready")
 	
 	for i in packed_scenes.size():
 		scenes.append(load(packed_scenes[i]))
@@ -32,8 +32,8 @@ func _ready():
 	RNG.randomize()
 
 
-func on_objects_ready(initiated_objects: Array) -> void:
-	objects = initiated_objects
+func set_objects(world_objects: Array) -> void:
+	objects = world_objects
 #	print_debug(objects)
 
 
@@ -53,9 +53,9 @@ func _on_Timer_timeout():
 			temp_scene.translate(Vector2(0, -Globals.SPAWN_LAYER_HEIGHT \
 				* rand_range(1, Globals.SPAWN_LAYER_NUM)))
 		obstacle_scene:
-			temp_scene.init(get_object(obstacle_scene))
+			temp_scene.init_object(get_object(obstacle_scene))
 		onehitmob_scene:
-			temp_scene.init(get_object(onehitmob_scene))
+			temp_scene.init_object(get_object(onehitmob_scene))
 			temp_scene.translate(Vector2(0, -Globals.SPAWN_LAYER_HEIGHT \
 				* rand_range(1, Globals.SPAWN_LAYER_NUM)))
 	

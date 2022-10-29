@@ -24,6 +24,7 @@ onready var animation := $AnimatedSprite
 onready var jump_sound := $JumpSound
 onready var death_sound := $DeathSound
 
+var avatar_name := ""
 #var attack_num := 0
 #const STONE_ATTACK_NUM = 3
 #var attack_damage := 10
@@ -33,23 +34,36 @@ var attacked_node: Node2D = null
 func _ready():
 # warning-ignore:return_value_discarded
 	Signals.connect("coin_picked", self, "on_coin_picked")
-# warning-ignore:return_value_discarded
-#	Signals.connect("being_attacked", self, "on_being_attacked")
-# warning-ignore:return_value_discarded
-#	Signals.connect("killed", self, "on_killed")
-# warning-ignore:return_value_discarded
-	Signals.connect("one_hit_killed", self, "on_one_hit_killed")
 
 
-func init(avatar_obj: Dictionary) -> void:
-	print_debug(avatar_obj)
+func init_object(avatar_obj: Dictionary) -> void:
+#	print_debug(avatar_obj)
+	if avatar_obj.has("name"):
+		avatar_name = avatar_obj["name"]
+
 	if avatar_obj.has("weapon"):
-		$Weapon.init(avatar_obj.weapon)
+		$Weapon.init_component(avatar_obj.weapon)
 	if avatar_obj.has("hp"):
-		$hp.init(avatar_obj.hp)
+		$hp.init_component(avatar_obj.hp)
 		$hp.show_ui()
 	else:
 		print("ERROR: Avatar has no hp")
+			
+#	if avatar_obj.has("money"):
+#		var money_min := 0.0
+#		var money_max := 0.0
+#		if typeof(obj.money) == TYPE_REAL:
+#			if obj.money > 0:
+#				money_min = obj.money
+#			money = int(round(money_min))
+#		elif typeof(obj.money) == TYPE_DICTIONARY:
+#			if obj.money.has("min") and typeof(obj.money.min) == TYPE_REAL and obj.money.min > 0:
+#				money_min = obj.money.min
+#			if obj.money.has("max") and typeof(obj.money.max) == TYPE_REAL:
+#				money_max = obj.money.max
+#				if money_max < money_min:
+#					money_max = money_min
+#		money = int(round(rand_range(money_min, money_max)))
 
 
 func _physics_process(delta):
@@ -104,8 +118,19 @@ func _input(event):
 
 
 func _on_Area2D_body_entered(body):
-	if body is StaticBody2D and state != START:
-		state = RUN
+	if body is StaticBody2D:
+		if state != START:
+			state = RUN
+	elif body.has("OBJECT_TYPE"):
+		match body.OBJECT_TYPE:
+			Globals.object_type.COIN:
+				pass
+			Globals.object_type.ONE_HIT_MOB:
+				on_hitting_one_hit_mob(body)
+			Globals.object_type.MOB, Globals.object_type.OBSTACLE:
+				on_being_attacked(body)
+	else:
+		print_debug("Unknown body collided: ", body)
 
 
 func _on_Area2D_body_exited(_body):
@@ -127,17 +152,18 @@ func on_coin_picked(money_given: int):
 	Signals.emit_signal("update_money", money)
 
 
-func on_being_attacked(attacked_object: Node2D):
+func on_being_attacked(attacking_node: Node2D):
+	print("Avatar is under attack from ", attacking_node)
 	state = ATTACK
-	attacked_node = attacked_object
+	attacked_node = attacking_node
 	Globals.world_speed = Globals.ZERO_WORLD_SPEED
 	$AttackTimer.start()
 	Signals.emit_signal("world_stopped")
 
 
-func on_one_hit_killed(killed_node: Node2D, money_given: int = 0) -> void:
-	print(killed_node, " killed")
-	add_money(money_given)
+func on_hitting_one_hit_mob(one_hit_mob: Node2D) -> void:
+	print(one_hit_mob, " killed")
+	attacked_node = one_hit_mob
 #	animation.stop()
 	animation.play("AirAttack")
 
@@ -149,6 +175,7 @@ func add_money(money_given: int) -> void:
 		Signals.emit_signal("update_money", money)
 
 
+# when receiving damage from object's weapon
 func on_avatar_attacked(attacking_node: Node2D, damage: int) -> void:
 	print("Avatar is attacked by %s for %s damage" % [attacking_node, damage])
 	$hp.receive_damage(damage)
@@ -160,7 +187,6 @@ func on_killed():
 	print("The avatar is dead")
 	hide()
 	Signals.disconnect("coin_picked", self, "on_coin_picked")
-	Signals.disconnect("being_attacked", self, "on_being_attacked")
 	if not Globals.SILENT_MODE:
 		death_sound.play()
 	Signals.emit_signal("game_over")
@@ -174,9 +200,10 @@ func _on_AttackTimer_timeout():
 	attacked_node.receive_damage(damage)
 
 
-func on_mob_killed(killed_node: Node2D, money_given: int = 0) -> void:
-	if attacked_node == killed_node:
-		print(killed_node, " killed")
+# when attacked object destroyed
+func on_object_destroyed(destroyed_node: Node2D, money_given: int = 0) -> void:
+	if attacked_node == destroyed_node:
+		print(destroyed_node, " destroyed")
 		add_money(money_given)
 		$AttackTimer.stop()
 		state = RUN

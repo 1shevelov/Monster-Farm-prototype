@@ -67,7 +67,7 @@ func connect_attack_signal() -> bool:
 	return true
 
 
-func init(from_json: Dictionary) -> bool:
+func init_component(from_json: Dictionary) -> bool:
 	if from_json.has(NAME):
 		weapon_name = Json.validate_string(from_json[NAME])
 	if from_json.has(DAMAGE):

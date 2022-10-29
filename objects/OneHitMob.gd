@@ -1,11 +1,21 @@
 extends "../scripts/ScrollMovement.gd"
 
+signal avatar_attacked  # on this.weapon attacking avatar
+signal destroyed  # on this destoyed
+
+const OBJECT_TYPE = Globals.object_type.ONE_HIT_MOB
+
 onready var hit_sound := $HitSound
 onready var money_sound := $MoneySound
 
+var avatar_node: Node2D
+
 var money: int
 
-func init(obj: Dictionary) -> void:
+var has_weapon := false
+
+
+func init_object(obj: Dictionary) -> void:
 	if obj.has("image"):
 		$Sprite.set_texture(load(obj.image))
 		var sprite_size: Vector2 = $Sprite.get_texture().get_size()
@@ -27,20 +37,34 @@ func init(obj: Dictionary) -> void:
 				if money_max < money_min:
 					money_max = money_min
 			money = int(round(rand_range(money_min, money_max)))
+			
+	if obj.has("weapon") and $Weapon.init_component(obj.weapon):
+		has_weapon = true
 
 
 func _physics_process(_delta):
 	move()
 
 
-func _on_Collision_body_entered(body: Node):
-	if body.name == "Avatar":
+func connect_to_avatar() -> void:
+# warning-ignore:return_value_discarded
+	connect("destroyed", avatar_node, "on_object_destroyed", [self, money], \
+	CONNECT_ONESHOT + CONNECT_DEFERRED)
+	if has_weapon and connect("avatar_attacked", \
+	avatar_node, "on_avatar_attacked", [self], CONNECT_ONESHOT + CONNECT_DEFERRED):
+		$Weapon.attack_stop()
+
+
+func _on_Collision_body_entered(some_node: Node):
+	if some_node.name == Globals.AVATAR_NODE_NAME:
+		avatar_node = some_node
+		connect_to_avatar()
 		hide()
 		if not Globals.SILENT_MODE:
 			hit_sound.play()
-		Signals.emit_signal("one_hit_killed", self, money)
 		if money > 0 and not Globals.SILENT_MODE:
 			money_sound.play()
+		emit_signal("destroyed", self, money)
 		yield(hit_sound, "finished")
 		queue_free()
 
@@ -48,5 +72,8 @@ func _on_Collision_body_entered(body: Node):
 func _on_VisibilityNotifier2D_screen_exited():
 	queue_free()
 
+
+func on_weapon_attacked(damage: int) -> void:
+	emit_signal("avatar_attacked", self, damage)
 
 

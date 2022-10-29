@@ -1,12 +1,9 @@
 extends Node2D
 
-const IMPORT_OBJECTS: GDScript = preload("res://objects/ImportObjects.gd")
-onready var import_objects_instance := IMPORT_OBJECTS.new()
-
 
 func _ready():
-	import_objects_instance.load_all_objects()
-	$Avatar.init(import_objects_instance.get_avatar())
+	$Spawner.set_objects($ImportWorld.load_all_objects())
+	$Avatar.init_object($ImportWorld.load_avatar())
 	
 	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Master"), 0)
 	randomize()

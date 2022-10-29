@@ -1,5 +1,7 @@
 extends "../scripts/ScrollMovement.gd"
 
+const OBJECT_TYPE = Globals.object_type.COIN
+
 onready var pickup_sound := $PickupSound
 
 var gives_money := Globals.MONEY_PER_COIN

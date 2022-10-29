@@ -13,7 +13,7 @@ const HP_DEFAULT := 1
 onready var hp_ui := $HPBarUI
 
 
-func init(hp) -> void:
+func init_component(hp) -> void:
 	if typeof(hp) == TYPE_DICTIONARY:
 		Json.validate_dic_of_int(hp, HP_DEFAULT, HP_MAXIMUM, HP_DEFAULT, HP)
 		# TODO: test resulting values

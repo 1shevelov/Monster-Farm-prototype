@@ -1,10 +1,11 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://HUD/MoneyCounter.tscn" type="PackedScene" id=1]
 [ext_resource path="res://avatar/Avatar.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Game.gd" type="Script" id=3]
 [ext_resource path="res://background/GroundCollision.tscn" type="PackedScene" id=4]
 [ext_resource path="res://objects/Spawner.tscn" type="PackedScene" id=5]
+[ext_resource path="res://scripts/ImportWorld.gd" type="Script" id=6]
 [ext_resource path="res://HUD/GameOverUI.tscn" type="PackedScene" id=7]
 [ext_resource path="res://background/ParallaxBackground.tscn" type="PackedScene" id=8]
 [ext_resource path="res://background/ParallaxForeground.tscn" type="PackedScene" id=9]
@@ -28,3 +29,6 @@ position = Vector2( 150, 509 )
 
 [node name="GameOverUI" parent="." instance=ExtResource( 7 )]
 visible = false
+
+[node name="ImportWorld" type="Node" parent="."]
+script = ExtResource( 6 )

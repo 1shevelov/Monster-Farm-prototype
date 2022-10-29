@@ -14,8 +14,8 @@ signal attack_finished
 # warning-ignore:unused_signal
 signal health_changed
 # warning-ignore:unused_signal
-signal one_hit_killed
+#signal one_hit_killed
 # warning-ignore:unused_signal
-signal objects_ready
+#signal objects_ready
 # warning-ignore:unused_signal
 #signal ready_to_start

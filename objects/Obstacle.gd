@@ -1,7 +1,9 @@
 extends "../scripts/ScrollMovement.gd"
 
-signal avatar_attacked
-signal destroyed
+signal avatar_attacked  # on this.weapon attacking avatar
+signal destroyed  # on this destoyed
+
+const OBJECT_TYPE = Globals.object_type.OBSTACLE
 
 var avatar_node: Node2D
 
@@ -19,7 +21,7 @@ var has_weapon := false
 #	pass
 
 
-func init(obj: Dictionary) -> void:
+func init_object(obj: Dictionary) -> void:
 	if obj.has("name"):
 		obstacle_name = obj["name"]
 		
@@ -29,7 +31,7 @@ func init(obj: Dictionary) -> void:
 		$Collision/CollisionShape2D.get_shape().set_extents(sprite_size / 1.5)
 		
 	if obj.has("hp"):
-		$hp.init(obj.hp)
+		$hp.init_component(obj.hp)
 	else:
 		print("ERROR: Obstacle has no hp")
 			
@@ -49,7 +51,7 @@ func init(obj: Dictionary) -> void:
 					money_max = money_min
 		money = int(round(rand_range(money_min, money_max)))
 		
-	if obj.has("weapon") and $Weapon.init(obj.weapon):
+	if obj.has("weapon") and $Weapon.init_component(obj.weapon):
 		has_weapon = true
 
 
