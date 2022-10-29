@@ -24,7 +24,7 @@ func init(hp) -> void:
 
 
 func show_ui() -> void:
-	if get_parent().name == "Avatar":
+	if get_parent().name == Globals.AVATAR_NODE_NAME:
 		hp_ui.activate(false)
 	else:
 		hp_ui.activate(true, get_parent().get_global_position())

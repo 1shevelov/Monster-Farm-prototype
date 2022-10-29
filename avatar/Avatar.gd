@@ -34,9 +34,9 @@ func _ready():
 # warning-ignore:return_value_discarded
 	Signals.connect("coin_picked", self, "on_coin_picked")
 # warning-ignore:return_value_discarded
-	Signals.connect("being_attacked", self, "on_being_attacked")
+#	Signals.connect("being_attacked", self, "on_being_attacked")
 # warning-ignore:return_value_discarded
-	Signals.connect("killed", self, "on_killed")
+#	Signals.connect("killed", self, "on_killed")
 # warning-ignore:return_value_discarded
 	Signals.connect("one_hit_killed", self, "on_one_hit_killed")
 
@@ -143,14 +143,21 @@ func on_one_hit_killed(killed_node: Node2D, money_given: int = 0) -> void:
 
 
 func add_money(money_given: int) -> void:
-	if money > 0:
+	if money_given > 0:
 		print("Money given: ", money_given)
 		money += money_given
 		Signals.emit_signal("update_money", money)
 
 
-func kill_avatar():
-#		print("The avatar is dead")
+func on_avatar_attacked(attacking_node: Node2D, damage: int) -> void:
+	print("Avatar is attacked by %s for %s damage" % [attacking_node, damage])
+	$hp.receive_damage(damage)
+	if $hp.is_dead():
+		on_killed()
+
+
+func on_killed():
+	print("The avatar is dead")
 	hide()
 	Signals.disconnect("coin_picked", self, "on_coin_picked")
 	Signals.disconnect("being_attacked", self, "on_being_attacked")
@@ -167,11 +174,9 @@ func _on_AttackTimer_timeout():
 	attacked_node.receive_damage(damage)
 
 
-func on_killed(killed_node: Node2D, one_time_damage: int = 0, money_given: int = 0) -> void:
+func on_mob_killed(killed_node: Node2D, money_given: int = 0) -> void:
 	if attacked_node == killed_node:
 		print(killed_node, " killed")
-		if one_time_damage > 0:
-			print("One-time damage: ", one_time_damage)
 		add_money(money_given)
 		$AttackTimer.stop()
 		state = RUN

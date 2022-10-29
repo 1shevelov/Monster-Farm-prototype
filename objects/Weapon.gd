@@ -1,5 +1,8 @@
 extends Node2D
 
+# only for the owner of the weapon
+signal weapon_attacked
+
 # MANDATORY properties
 
 # 0 < name.length < NAME_MAXIMUM_LENGTH 
@@ -22,6 +25,7 @@ const DAMAGE_MAX := "max"
 # if missed, the weapon is considered one-time
 # 0.0 < delay <= DELAY_MAX, in seconds
 const DELAY := "delay"
+const DELAY_MINIMUM := 0.05
 const DELAY_MAXIMUM := 100.0
 const DELAY_DEFAULT := 1.0
 
@@ -47,6 +51,20 @@ var one_time := false
 #var description := ""
 #var damage_type = one of DAMAGE_TYPES enum
 #var ui_picture = $Picture
+
+
+func connect_attack_signal() -> bool:
+	if one_time:
+		if connect("weapon_attacked", get_parent(), "on_weapon_attacked", \
+		[get_damage()], CONNECT_DEFERRED + CONNECT_ONESHOT):
+			print_debug("Error connecting \"weapon_attacked\" with its parent ", get_parent())
+			return false
+	else:
+		if connect("weapon_attacked", get_parent(), "on_weapon_attacked", \
+		[get_damage()], CONNECT_DEFERRED):
+			print_debug("Error connecting \"weapon_attacked\" with its parent ", get_parent())
+			return false
+	return true
 
 
 func init(from_json: Dictionary) -> bool:
@@ -85,16 +103,19 @@ func init(from_json: Dictionary) -> bool:
 			print("Wrong type of %s in weapon %s" % [ONE_TIME, from_json[NAME]])
 			
 	if from_json.has(DELAY):
-		delay = Json.validate_float(from_json[DELAY], 0.0, DELAY_MAXIMUM, DELAY_DEFAULT, DELAY)
+		delay = Json.validate_float(from_json[DELAY], \
+		DELAY_MINIMUM, DELAY_MAXIMUM, DELAY_DEFAULT, DELAY)
 	elif not one_time:
 		print("%s value missed in wepon %s. Using default value." % [DELAY, from_json[NAME]])
+	if not one_time:
+		$AttackTimer.set_wait_time(delay)
 				
+	if not connect_attack_signal():
+		return false
 	return true
 	
 	
 func get_damage() -> int:
-#	randi() % 100 + 1 # Returns random integer between 1 and 100
-# % 10 + 5
 	if not damage_array.empty():
 		# random member of array returned
 		return damage_array[randi() % damage_array.size()]
@@ -105,12 +126,23 @@ func get_damage() -> int:
 		return 0
 
 
-func get_delay() -> float:
-	return delay
+func attack_start() -> void:
+	if not one_time:
+		$AttackTimer.start()
 
 
-func is_one_time() -> bool:
-	return one_time
+#func is_one_time() -> bool:
+#	return one_time
 
 
-# TODO: test damage formula, wepon json validation
+func _on_AttackTimer_timeout():
+	emit_signal("weapon_attacked", get_damage())
+
+
+func attack_stop() -> void:
+	if one_time:
+		emit_signal("weapon_attacked", get_damage())
+	else:
+		$AttackTimer.stop()
+
+

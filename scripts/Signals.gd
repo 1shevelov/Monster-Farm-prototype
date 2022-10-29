@@ -12,10 +12,6 @@ signal world_stopped
 # warning-ignore:unused_signal
 signal attack_finished
 # warning-ignore:unused_signal
-signal killed
-# warning-ignore:unused_signal
-signal being_attacked
-# warning-ignore:unused_signal
 signal health_changed
 # warning-ignore:unused_signal
 signal one_hit_killed

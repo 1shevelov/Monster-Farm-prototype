@@ -20,3 +20,6 @@ const STONE_HEALTH_MAX := 48
 
 var MONEY_PER_COIN := 10
 const INITIAL_MONEY := 0
+
+
+const AVATAR_NODE_NAME = "Avatar"
