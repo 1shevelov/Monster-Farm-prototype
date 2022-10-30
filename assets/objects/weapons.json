@@ -5,7 +5,8 @@
 			"min": 5,
 			"max": 8
 		},
-		"delay": 1.0
+		"delay": 1.0,
+		"probability": 0.95
 	},
 	"1": {
 		"name": "sword",
@@ -19,7 +20,8 @@
 	"2": {
 		"name": "trimob's talons",
 		"damage": 5,
-		"one-time": true
+		"one-time": true,
+		"probability": 0.5
 	},
 	"3": {
 		"name": "treasure chest's explosion",

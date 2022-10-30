@@ -118,19 +118,8 @@ func _input(event):
 
 
 func _on_Area2D_body_entered(body):
-	if body is StaticBody2D:
-		if state != START:
-			state = RUN
-	elif body.has("OBJECT_TYPE"):
-		match body.OBJECT_TYPE:
-			Globals.object_type.COIN:
-				pass
-			Globals.object_type.ONE_HIT_MOB:
-				on_hitting_one_hit_mob(body)
-			Globals.object_type.MOB, Globals.object_type.OBSTACLE:
-				on_being_attacked(body)
-	else:
-		print_debug("Unknown body collided: ", body)
+	if body is StaticBody2D and state != START:
+		state = RUN
 
 
 func _on_Area2D_body_exited(_body):
@@ -152,18 +141,28 @@ func on_coin_picked(money_given: int):
 	Signals.emit_signal("update_money", money)
 
 
-func on_being_attacked(attacking_node: Node2D):
-	print("Avatar is under attack from ", attacking_node)
-	state = ATTACK
+func on_attacked(attacking_node: Node2D, node_type: String) -> void:
+	print_debug("Avatar is under attack")
 	attacked_node = attacking_node
+	match node_type:
+		"Obstacle", "Mob":
+			print("Avatar is attacking an obstacle ", attacking_node)
+			attack_hp_object()
+		"OneHitMob":
+			print(attacking_node, " killed")
+			attack_one_hit_mob()
+		_:
+			print("Avatar attacked a ", attacking_node)
+
+
+func attack_hp_object() -> void:
+	state = ATTACK
 	Globals.world_speed = Globals.ZERO_WORLD_SPEED
 	$AttackTimer.start()
 	Signals.emit_signal("world_stopped")
 
 
-func on_hitting_one_hit_mob(one_hit_mob: Node2D) -> void:
-	print(one_hit_mob, " killed")
-	attacked_node = one_hit_mob
+func attack_one_hit_mob() -> void:
 #	animation.stop()
 	animation.play("AirAttack")
 
@@ -176,7 +175,7 @@ func add_money(money_given: int) -> void:
 
 
 # when receiving damage from object's weapon
-func on_avatar_attacked(attacking_node: Node2D, damage: int) -> void:
+func on_damaged(attacking_node: Node2D, damage: int) -> void:
 	print("Avatar is attacked by %s for %s damage" % [attacking_node, damage])
 	$hp.receive_damage(damage)
 	if $hp.is_dead():
@@ -215,6 +214,5 @@ func _on_DashTimer_timeout():
 	state = RUN
 	Globals.world_speed = Globals.RUN_WORLD_SPEED
 	$DashTimer.stop()
-
 
 

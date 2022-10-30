@@ -24,9 +24,9 @@ const INITIAL_MONEY := 0
 
 const AVATAR_NODE_NAME = "Avatar"
 
-enum object_type {
-	COIN,
-	OBSTACLE,
-	ONE_HIT_MOB,
-	MOB
-}
+const OBJECTS_NAMES = [
+	"Coin",
+	"Obstacle",
+	"OneHitMon",
+	"Mob"
+]

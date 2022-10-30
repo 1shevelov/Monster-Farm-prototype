@@ -1,9 +1,8 @@
 extends "../scripts/ScrollMovement.gd"
 
-signal avatar_attacked  # on this.weapon attacking avatar
+signal avatar_attacked # on collision
+signal avatar_damaged  # on this.weapon attacking avatar
 signal destroyed  # on this destoyed
-
-const OBJECT_TYPE = Globals.object_type.ONE_HIT_MOB
 
 onready var hit_sound := $HitSound
 onready var money_sound := $MoneySound
@@ -48,17 +47,21 @@ func _physics_process(_delta):
 
 func connect_to_avatar() -> void:
 # warning-ignore:return_value_discarded
-	connect("destroyed", avatar_node, "on_object_destroyed", [self, money], \
+	connect("avatar_attacked", avatar_node, "on_attacked", [], \
 	CONNECT_ONESHOT + CONNECT_DEFERRED)
-	if has_weapon and connect("avatar_attacked", \
-	avatar_node, "on_avatar_attacked", [self], CONNECT_ONESHOT + CONNECT_DEFERRED):
+	if has_weapon and connect("avatar_damaged", \
+	avatar_node, "on_damaged", [], CONNECT_ONESHOT + CONNECT_DEFERRED):
 		$Weapon.attack_stop()
+# warning-ignore:return_value_discarded
+	connect("destroyed", avatar_node, "on_object_destroyed", [], \
+	CONNECT_ONESHOT + CONNECT_DEFERRED)
 
 
 func _on_Collision_body_entered(some_node: Node):
 	if some_node.name == Globals.AVATAR_NODE_NAME:
 		avatar_node = some_node
 		connect_to_avatar()
+		emit_signal("avatar_attacked", self, "OneHitMob")
 		hide()
 		if not Globals.SILENT_MODE:
 			hit_sound.play()
@@ -74,6 +77,6 @@ func _on_VisibilityNotifier2D_screen_exited():
 
 
 func on_weapon_attacked(damage: int) -> void:
-	emit_signal("avatar_attacked", self, damage)
+	emit_signal("avatar_damaged", self, damage)
 
 
