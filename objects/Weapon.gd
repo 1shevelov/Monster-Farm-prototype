@@ -55,13 +55,15 @@ var one_time := false
 
 func connect_attack_signal() -> bool:
 	if one_time:
-		if connect("weapon_attacked", get_parent(), "on_weapon_attacked", \
-		[get_damage()], CONNECT_DEFERRED + CONNECT_ONESHOT):
+		var err = connect("weapon_attacked", get_parent(), "on_weapon_attacked", \
+		[], CONNECT_DEFERRED + CONNECT_ONESHOT)
+		if err != OK:
 			print_debug("Error connecting \"weapon_attacked\" with its parent ", get_parent())
 			return false
 	else:
-		if connect("weapon_attacked", get_parent(), "on_weapon_attacked", \
-		[get_damage()], CONNECT_DEFERRED):
+		var err = connect("weapon_attacked", get_parent(), "on_weapon_attacked", \
+		[], CONNECT_DEFERRED)
+		if err != OK:
 			print_debug("Error connecting \"weapon_attacked\" with its parent ", get_parent())
 			return false
 	return true
@@ -135,13 +137,15 @@ func attack_start() -> void:
 #	return one_time
 
 
-func _on_AttackTimer_timeout():
+func _on_AttackTimer_timeout() -> void:
 	emit_signal("weapon_attacked", get_damage())
 
 
 func attack_stop() -> void:
 	if one_time:
-		emit_signal("weapon_attacked", get_damage())
+		var dam = get_damage()
+		print_debug("One time weapon attacks for ", dam)
+		emit_signal("weapon_attacked", dam)
 	else:
 		$AttackTimer.stop()
 

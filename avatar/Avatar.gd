@@ -141,28 +141,19 @@ func on_coin_picked(money_given: int):
 	Signals.emit_signal("update_money", money)
 
 
-func on_attacked(attacking_node: Node2D, node_type: String) -> void:
-	print_debug("Avatar is under attack")
+func on_attacked_hp_object(attacking_node: Node2D) -> void:
+	print_debug("Avatar is under attack by hp object")
 	attacked_node = attacking_node
-	match node_type:
-		"Obstacle", "Mob":
-			print("Avatar is attacking an obstacle ", attacking_node)
-			attack_hp_object()
-		"OneHitMob":
-			print(attacking_node, " killed")
-			attack_one_hit_mob()
-		_:
-			print("Avatar attacked a ", attacking_node)
-
-
-func attack_hp_object() -> void:
 	state = ATTACK
 	Globals.world_speed = Globals.ZERO_WORLD_SPEED
 	$AttackTimer.start()
 	Signals.emit_signal("world_stopped")
 
 
-func attack_one_hit_mob() -> void:
+func on_attacked_one_hit_mob(attacking_node: Node2D, money_given: int = 0) -> void:
+	print(attacking_node, " killed")
+	attacked_node = attacking_node
+	add_money(money_given)
 #	animation.stop()
 	animation.play("AirAttack")
 
@@ -175,8 +166,7 @@ func add_money(money_given: int) -> void:
 
 
 # when receiving damage from object's weapon
-func on_damaged(attacking_node: Node2D, damage: int) -> void:
-	print("Avatar is attacked by %s for %s damage" % [attacking_node, damage])
+func on_damaged(damage: int) -> void:
 	$hp.receive_damage(damage)
 	if $hp.is_dead():
 		on_killed()
@@ -199,7 +189,7 @@ func _on_AttackTimer_timeout():
 	attacked_node.receive_damage(damage)
 
 
-# when attacked object destroyed
+# when attacked hp object is destroyed
 func on_object_destroyed(destroyed_node: Node2D, money_given: int = 0) -> void:
 	if attacked_node == destroyed_node:
 		print(destroyed_node, " destroyed")

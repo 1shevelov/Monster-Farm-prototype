@@ -1,8 +1,8 @@
 extends "../scripts/ScrollMovement.gd"
 
-signal avatar_attacked # on collision
+signal avatar_attacked_hp_object # on collision
 signal avatar_damaged  # on this.weapon attacking avatar
-signal destroyed  # on this destoyed
+signal destroyed_hp_object  # on this destoyed
 
 var avatar_node: Node2D
 
@@ -59,15 +59,19 @@ func _physics_process(_delta) -> void:
 
 
 func connect_to_avatar() -> void:
-# warning-ignore:return_value_discarded
-	connect("avatar_attacked", avatar_node, "on_attacked", [], \
-	CONNECT_ONESHOT + CONNECT_DEFERRED)
-	if has_weapon and connect("avatar_damaged", \
-	avatar_node, "on_damaged", [], CONNECT_DEFERRED):
+	var err = connect("avatar_attacked_hp_object", avatar_node, \
+	"on_attacked_hp_object", [], CONNECT_ONESHOT + CONNECT_DEFERRED)
+	if err != OK:
+		print_debug("Error connecting \"avatar_attacked_hp_object\": ", err)
+	err = connect("avatar_damaged", avatar_node, "on_damaged", [], CONNECT_DEFERRED)
+	if err != OK:
+		print_debug("Error connecting \"avatar_damaged\": ", err)
+	elif has_weapon:
 		$Weapon.attack_start()
-# warning-ignore:return_value_discarded
-	connect("destroyed", avatar_node, "on_object_destroyed", [], \
-	CONNECT_ONESHOT + CONNECT_DEFERRED)
+	err = connect("destroyed_hp_object", avatar_node, "on_object_destroyed", \
+	[], CONNECT_ONESHOT + CONNECT_DEFERRED)
+	if err != OK:
+		print_debug("Error connecting \"destroyed_hp_object\": ", err)
 
 
 func _on_Collision_body_entered(some_node: Node) -> void:
@@ -77,7 +81,7 @@ func _on_Collision_body_entered(some_node: Node) -> void:
 			hit_sound.play()
 		$hp.show_ui()
 		connect_to_avatar()
-		emit_signal("avatar_attacked", self, "Obstacle")
+		emit_signal("avatar_attacked_hp_object", self)
 
 
 func _on_VisibilityNotifier2D_screen_exited() -> void:
@@ -85,7 +89,7 @@ func _on_VisibilityNotifier2D_screen_exited() -> void:
 
 
 func on_destroyed() -> void:
-	emit_signal("destroyed", self, money)
+	emit_signal("destroyed_hp_object", self, money)
 	if money > 0 and not Globals.SILENT_MODE:
 		money_sound.play()
 #		die effect or sound?
@@ -100,5 +104,5 @@ func receive_damage(damage_amount: int) -> void:
 
 
 func on_weapon_attacked(damage: int) -> void:
-	emit_signal("avatar_damaged", self, damage)
+	emit_signal("avatar_damaged", damage)
 
