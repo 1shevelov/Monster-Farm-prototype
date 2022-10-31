@@ -61,16 +61,16 @@ func _physics_process(_delta) -> void:
 func connect_to_avatar() -> void:
 	var err = connect("avatar_attacked_hp_object", avatar_node, \
 	"on_attacked_hp_object", [], CONNECT_ONESHOT + CONNECT_DEFERRED)
-	if err != OK:
+	if err:
 		print_debug("Error connecting \"avatar_attacked_hp_object\": ", err)
 	err = connect("avatar_damaged", avatar_node, "on_damaged", [], CONNECT_DEFERRED)
-	if err != OK:
+	if err:
 		print_debug("Error connecting \"avatar_damaged\": ", err)
 	elif has_weapon:
 		$Weapon.attack_start()
 	err = connect("destroyed_hp_object", avatar_node, "on_object_destroyed", \
 	[], CONNECT_ONESHOT + CONNECT_DEFERRED)
-	if err != OK:
+	if err:
 		print_debug("Error connecting \"destroyed_hp_object\": ", err)
 
 

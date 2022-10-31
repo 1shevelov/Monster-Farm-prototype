@@ -62,8 +62,10 @@ func _on_Timer_timeout():
 #	add_child_below_node(self, temp_scene) - was used in tutorial, why?
 	add_child(temp_scene)
 	
-	if temp_scene.name == coin_scene and rand_range(0, 10) > 3:
-		spawn_several_coins(temp_scene, selected_scene_index)
+	if temp_scene.name == coin_scene and randi() % 10 > 2:
+		spawn_several_objects(temp_scene, selected_scene_index)
+	if temp_scene.name == onehitmob_scene and randi() % 10 > 3:
+		spawn_several_objects(temp_scene, selected_scene_index)
 
 
 func get_object(scene_name: String) -> Dictionary:
@@ -76,11 +78,13 @@ func get_object(scene_name: String) -> Dictionary:
 	return {}
 
 
-func spawn_several_coins(first_coin_scene, scene_index: int) -> void:
-	var next_coin_scene
-	for i in rand_range(1, Globals.SPAWN_COINS_MAX + 1):
-		next_coin_scene = scenes[scene_index].instance()
-		next_coin_scene.translate(
-			Vector2(first_coin_scene.get_position().x + i * 20,
-			first_coin_scene.get_position().y))
-		add_child(next_coin_scene)
+func spawn_several_objects(first_object_scene, scene_index: int) -> void:
+	var next_object_scene
+	for i in randi() % Globals.SPAWN_COINS_MAX + 1:
+		next_object_scene = scenes[scene_index].instance()
+		var pos1 = next_object_scene.get_position()
+		next_object_scene.translate(
+			Vector2(first_object_scene.get_position().x + i * 20,
+			first_object_scene.get_position().y))
+		print("Pos: %s/%s" % [pos1, next_object_scene.get_position()])
+		add_child(next_object_scene)

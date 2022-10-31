@@ -46,14 +46,14 @@ func _physics_process(_delta):
 func connect_to_avatar(avatar_node: Node) -> void:
 	var err = connect("avatar_attacked_one_hit_mob", avatar_node, "on_attacked_one_hit_mob", [], \
 	CONNECT_ONESHOT + CONNECT_DEFERRED)
-	if err != OK:
+	if err:
 		print_debug("Error connecting \"avatar_attacked_one_hit_mob\": ", err)
 	err = connect("avatar_damaged", \
 	avatar_node, "on_damaged", [], CONNECT_ONESHOT + CONNECT_DEFERRED)
-	if err == OK and has_weapon: 
-		$Weapon.attack_stop()
-	else:
+	if err:
 		print_debug("Error connecting \"avatar_damaged\": ", err)
+	elif has_weapon:
+		$Weapon.attack_stop()
 
 
 func _on_Collision_body_entered(some_node: Node):
