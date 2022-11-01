@@ -99,6 +99,7 @@ func _physics_process(delta):
 
 func _input(event):
 #	IDLE state only on world start
+	print("STATE = ", state)
 	if state == START and event.is_action_pressed("jump"):
 #		print("START")
 		state = RUN
@@ -142,7 +143,7 @@ func on_coin_picked(money_given: int):
 
 
 func on_attacked_hp_object(attacking_node: Node2D) -> void:
-	print_debug("Avatar is under attack by hp object")
+#	print_debug("Avatar is under attack by hp object")
 	attacked_node = attacking_node
 	state = ATTACK
 	Globals.world_speed = Globals.ZERO_WORLD_SPEED
@@ -151,7 +152,7 @@ func on_attacked_hp_object(attacking_node: Node2D) -> void:
 
 
 func on_attacked_one_hit_mob(attacking_node: Node2D, money_given: int = 0) -> void:
-	print(attacking_node, " killed")
+#	print(attacking_node, " killed")
 	attacked_node = attacking_node
 	add_money(money_given)
 #	animation.stop()
@@ -160,7 +161,7 @@ func on_attacked_one_hit_mob(attacking_node: Node2D, money_given: int = 0) -> vo
 
 func add_money(money_given: int) -> void:
 	if money_given > 0:
-		print("Money given: ", money_given)
+#		print("Money given: ", money_given)
 		money += money_given
 		Signals.emit_signal("update_money", money)
 
@@ -178,6 +179,8 @@ func on_killed():
 	Signals.disconnect("coin_picked", self, "on_coin_picked")
 	if not Globals.SILENT_MODE:
 		death_sound.play()
+	Globals.world_speed = Globals.ZERO_WORLD_SPEED
+	Signals.emit_signal("world_stopped")
 	Signals.emit_signal("game_over")
 	yield(death_sound, "finished")
 	queue_free()
@@ -185,7 +188,7 @@ func on_killed():
 
 func _on_AttackTimer_timeout():
 	var damage = $Weapon.get_damage()
-	print("Avatar is attacking with the %s for %s" % [$Weapon.weapon_name, damage])
+#	print("Avatar is attacking with the %s for %s" % [$Weapon.weapon_name, damage])
 	attacked_node.receive_damage(damage)
 
 

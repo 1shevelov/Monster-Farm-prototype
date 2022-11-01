@@ -143,9 +143,7 @@ func _on_AttackTimer_timeout() -> void:
 
 func attack_stop() -> void:
 	if one_time:
-		var dam = get_damage()
-		print_debug("One time weapon attacks for ", dam)
-		emit_signal("weapon_attacked", dam)
+		emit_signal("weapon_attacked", get_damage())
 	else:
 		$AttackTimer.stop()
 

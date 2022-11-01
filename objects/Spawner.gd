@@ -82,9 +82,11 @@ func spawn_several_objects(first_object_scene, scene_index: int) -> void:
 	var next_object_scene
 	for i in randi() % Globals.SPAWN_COINS_MAX + 1:
 		next_object_scene = scenes[scene_index].instance()
-		var pos1 = next_object_scene.get_position()
+#		var pos1 = next_object_scene.get_position()
+		if first_object_scene.name == onehitmob_scene:
+			next_object_scene.init_object(get_object(onehitmob_scene))
 		next_object_scene.translate(
 			Vector2(first_object_scene.get_position().x + i * 20,
 			first_object_scene.get_position().y))
-		print("Pos: %s/%s" % [pos1, next_object_scene.get_position()])
+#		print("Pos: %s/%s" % [pos1, next_object_scene.get_position()])
 		add_child(next_object_scene)
