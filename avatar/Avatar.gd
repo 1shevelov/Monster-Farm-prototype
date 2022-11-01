@@ -25,9 +25,6 @@ onready var jump_sound := $JumpSound
 onready var death_sound := $DeathSound
 
 var avatar_name := ""
-#var attack_num := 0
-#const STONE_ATTACK_NUM = 3
-#var attack_damage := 10
 var attacked_node: Node2D = null
 
 

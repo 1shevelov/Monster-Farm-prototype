@@ -15,9 +15,6 @@ const SPAWN_COINS_MAX := 5
 # checked before playing every sound
 const SILENT_MODE := true
 
-const STONE_HEALTH_MIN := 28
-const STONE_HEALTH_MAX := 48
-
 var MONEY_PER_COIN := 10
 const INITIAL_MONEY := 0
 
