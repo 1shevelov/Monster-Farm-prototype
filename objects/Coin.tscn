@@ -3,7 +3,7 @@
 [ext_resource path="res://assets/objects/coin.png" type="Texture" id=1]
 [ext_resource path="res://objects/Collision.tscn" type="PackedScene" id=2]
 [ext_resource path="res://objects/Coin.gd" type="Script" id=3]
-[ext_resource path="res://assets/sounds/coin-pickup.wav" type="AudioStream" id=4]
+[ext_resource path="res://components/Resources.tscn" type="PackedScene" id=4]
 
 [sub_resource type="CircleShape2D" id=1]
 radius = 9.21954
@@ -21,9 +21,7 @@ shape = SubResource( 1 )
 
 [node name="VisibilityNotifier2D" type="VisibilityNotifier2D" parent="."]
 
-[node name="PickupSound" type="AudioStreamPlayer" parent="."]
-stream = ExtResource( 4 )
-volume_db = -30.588
+[node name="Resources" parent="." instance=ExtResource( 4 )]
 
 [connection signal="body_entered" from="Collision" to="." method="_on_Collision_body_entered"]
 [connection signal="screen_exited" from="VisibilityNotifier2D" to="." method="_on_VisibilityNotifier2D_screen_exited"]

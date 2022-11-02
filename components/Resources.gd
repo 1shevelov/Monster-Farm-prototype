@@ -1,5 +1,7 @@
 extends Node2D
 
+signal money_changed
+
 const MONEY := "money"
 const MONEY_MIN := "min"
 const MONEY_MAX := "max"
@@ -23,6 +25,13 @@ func init_component(money_data) -> void:
 		MONEY_DEFAULT, MONEY)
 
 
+func connect_avatar_ui(money_counter_node: Control) -> void:
+	var err = connect("money_changed", money_counter_node, "update_counter", \
+	[money], CONNECT_DEFERRED)
+	if err:
+		print_debug("Error connecting \"money_changed\" to ", money_counter_node)
+
+
 # empties the purse
 # should play the sound only if money is given to avatar
 func give_all() -> int:
@@ -42,12 +51,16 @@ func give_a_part(percent: float) -> int:
 	return part
 
 
-# for avatar
-func add_money(addition: int) -> void:
-	money += addition
+func avatar_add_money(addition: int) -> void:
+	if addition > 0:
+		money += addition
+		emit_signal("money_changed")
 
 
-# for avatar
-func update_ui() -> void:
-	# emit_signal("ui_update_money", money)
-	pass
+func avatar_remove_money(subtraction: int) -> void:
+	if subtraction > 0:
+		money -= subtraction
+		if money < 0:
+			money = 0
+		emit_signal("money_changed")
+

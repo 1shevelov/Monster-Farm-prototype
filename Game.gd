@@ -4,6 +4,7 @@ extends Node2D
 func _ready():
 	$Spawner.set_objects($ImportWorld.load_all_objects())
 	$Avatar.init_object($ImportWorld.load_avatar())
+	$Avatar.connect_ui($Ui/MoneyCounter, $Ui/HPBarUI)
 	
 	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Master"), 0)
 	randomize()

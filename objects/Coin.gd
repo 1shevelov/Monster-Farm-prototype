@@ -1,21 +1,33 @@
 extends "../scripts/ScrollMovement.gd"
 
-onready var pickup_sound := $PickupSound
+signal avatar_hit_resource_object # on collision with avatar
+#var gives_money := Globals.MONEY_PER_COIN
 
-var gives_money := Globals.MONEY_PER_COIN
+
+func _ready() -> void:
+	$Resources.init_component(Globals.MONEY_PER_COIN)
 
 
 func _physics_process(_delta):
 	move()
 
 
-func _on_Collision_body_entered(body: Node):
-	if body.name == "Avatar":
+func connect_to_avatar(avatar_node: Node) -> void:
+	var err = connect("avatar_hit_resource_object", avatar_node, "on_hit_resource_object", \
+	[], CONNECT_ONESHOT + CONNECT_DEFERRED)
+	if err:
+		print_debug("Error connecting \"avatar_hit_resource_object\": ", err)
+
+
+func _on_Collision_body_entered(some_node: Node):
+	if some_node.name == "Avatar":
+		connect_to_avatar(some_node)
 		hide()
-		if not Globals.SILENT_MODE:
-			pickup_sound.play()
-		Signals.emit_signal("coin_picked", gives_money)
-		yield(pickup_sound, "finished")
+#		if not Globals.SILENT_MODE:
+#			pickup_sound.play()
+		emit_signal("avatar_hit_resource_object", $Resources.give_all())
+#		Signals.emit_signal("coin_picked", gives_money)
+#		yield(pickup_sound, "finished")
 		queue_free()
 
 

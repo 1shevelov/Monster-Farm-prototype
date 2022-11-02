@@ -1,6 +1,6 @@
 extends "../scripts/ScrollMovement.gd"
 
-signal avatar_attacked_one_hit_mob # on collision
+signal avatar_attacked_one_hit_mob # on collision with avatar
 signal avatar_damaged  # on this.weapon attacking avatar
 #signal destroyed  # on this destoyed
 

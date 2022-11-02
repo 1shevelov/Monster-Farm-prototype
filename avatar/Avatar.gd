@@ -28,8 +28,12 @@ var attacked_node: Node2D = null
 
 
 func _ready():
-# warning-ignore:return_value_discarded
-	Signals.connect("coin_picked", self, "on_coin_picked")
+	pass
+
+
+func connect_ui(money_counter: Control, hp_bar: Control) -> void:
+	$Resources.connect_avatar_ui(money_counter)
+	$hp.connect_avatar_ui(hp_bar)
 
 
 func init_object(avatar_obj: Dictionary) -> void:
@@ -50,7 +54,7 @@ func init_object(avatar_obj: Dictionary) -> void:
 		# update UI money cointer
 
 
-func _physics_process(delta):
+func _physics_process(delta: float) -> void:
 	match state:
 		START:
 			animation.play("Idle")
@@ -81,7 +85,7 @@ func _physics_process(delta):
 	move_and_collide(velocity * delta)
 
 
-func _input(event):
+func _input(event) -> void:
 #	IDLE state only on world start
 	print("STATE = ", state)
 	if state == START and event.is_action_pressed("jump"):
@@ -120,12 +124,11 @@ func get_random_state(state_list):
 	return state_list.front()
 	
 	
-func on_coin_picked(money_given: int):
+func on_hit_resource_object(money: int):
 #	Signals.emit_signal("update_score", score)
 #	Signals.emit_signal("update_money", money)
-	if money_given > 0:
-		$Resources.add_money(money_given)
-		$Resources.update_ui()
+	$Resources.avatar_add_money(money)
+	# Play pick up animation, like Yipee!
 
 
 func on_attacked_hp_object(attacking_node: Node2D) -> void:
@@ -137,19 +140,12 @@ func on_attacked_hp_object(attacking_node: Node2D) -> void:
 	Signals.emit_signal("world_stopped")
 
 
-func on_attacked_one_hit_mob(attacking_node: Node2D, money_given: int = 0) -> void:
+func on_attacked_one_hit_mob(attacking_node: Node2D, money: int = 0) -> void:
 #	print(attacking_node, " killed")
 	attacked_node = attacking_node
-	add_money(money_given)
+	$Resources.avatar_add_money(money)
 #	animation.stop()
 	animation.play("AirAttack")
-
-
-#func add_money(money_given: int) -> void:
-#	if money_given > 0:
-##		print("Money given: ", money_given)
-#		money += money_given
-#		Signals.emit_signal("update_money", money)
 
 
 # when receiving damage from object's weapon
@@ -182,7 +178,7 @@ func _on_AttackTimer_timeout():
 func on_object_destroyed(destroyed_node: Node2D, money_given: int = 0) -> void:
 	if attacked_node == destroyed_node:
 		print(destroyed_node, " destroyed")
-		add_money(money_given)
+		$Resources.avatar_add_money(money_given)
 		$AttackTimer.stop()
 		state = RUN
 		Globals.world_speed = Globals.RUN_WORLD_SPEED
