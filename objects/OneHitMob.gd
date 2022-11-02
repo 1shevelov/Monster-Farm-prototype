@@ -5,9 +5,6 @@ signal avatar_damaged  # on this.weapon attacking avatar
 #signal destroyed  # on this destoyed
 
 onready var hit_sound := $HitSound
-onready var money_sound := $MoneySound
-
-var money: int
 
 var has_weapon := false
 
@@ -20,20 +17,7 @@ func init_object(obj: Dictionary) -> void:
 		$Collision/CollisionShape2D.get_shape().set_radius(sprite_size.x / 1.5)
 		
 	if obj.has("money"):
-		var money_min := 0.0
-		var money_max := 0.0
-		if typeof(obj.money) == TYPE_REAL:
-			if (obj.money) > 0:
-				money_min = obj.money
-			money = int(round(money_min))
-		elif typeof(obj.money) == TYPE_DICTIONARY:
-			if obj.money.has("min") and typeof(obj.money.min) == TYPE_REAL and obj.money.min > 0:
-				money_min = obj.money.min
-			if obj.money.has("max") and typeof(obj.money.max) == TYPE_REAL:
-				money_max = obj.money.max
-				if money_max < money_min:
-					money_max = money_min
-			money = int(round(rand_range(money_min, money_max)))
+		$Resources.init_component(obj["money"])
 			
 	if obj.has("weapon") and $Weapon.init_component(obj.weapon):
 		has_weapon = true
@@ -59,13 +43,10 @@ func connect_to_avatar(avatar_node: Node) -> void:
 func _on_Collision_body_entered(some_node: Node):
 	if some_node.name == Globals.AVATAR_NODE_NAME:
 		connect_to_avatar(some_node)
-		emit_signal("avatar_attacked_one_hit_mob", self, money)
+		emit_signal("avatar_attacked_one_hit_mob", self, $Resources.give_all())
 		hide()
 		if not Globals.SILENT_MODE:
 			hit_sound.play()
-		if money > 0 and not Globals.SILENT_MODE:
-			money_sound.play()
-#		emit_signal("destroyed", self, money)
 		yield(hit_sound, "finished")
 		if not has_weapon:
 			queue_free()

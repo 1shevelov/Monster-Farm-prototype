@@ -9,6 +9,8 @@ const MONEY_DEFAULT := 0
 
 var money: int = MONEY_DEFAULT
 
+onready var sound = $MoneySound
+
 
 func init_component(money_data) -> void:
 	if typeof(money_data) == TYPE_DICTIONARY:
@@ -22,7 +24,10 @@ func init_component(money_data) -> void:
 
 
 # empties the purse
-func give_away() -> int:
+# should play the sound only if money is given to avatar
+func give_all() -> int:
+	if money > MONEY_DEFAULT and not Globals.SILENT_MODE:
+		sound.play()
 	var whole_summ := money
 	money = MONEY_DEFAULT
 	return whole_summ
@@ -30,7 +35,19 @@ func give_away() -> int:
 
 # returns part of the summ, but no less then 1
 func give_a_part(percent: float) -> int:
+	if money > MONEY_DEFAULT and not Globals.SILENT_MODE:
+		sound.play()
 	var part = int(ceil(money * percent))
 	money -= part
 	return part
 
+
+# for avatar
+func add_money(addition: int) -> void:
+	money += addition
+
+
+# for avatar
+func update_ui() -> void:
+	# emit_signal("ui_update_money", money)
+	pass

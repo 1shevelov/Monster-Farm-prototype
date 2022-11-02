@@ -7,11 +7,8 @@ signal destroyed_hp_object  # on this destoyed
 var avatar_node: Node2D
 
 onready var hit_sound := $HitSound
-onready var money_sound := $MoneySound
 
 var obstacle_name := ""
-
-var money := 0
 
 var has_weapon := false
 
@@ -35,20 +32,7 @@ func init_object(obj: Dictionary) -> void:
 		print("ERROR: Obstacle has no hp")
 			
 	if obj.has("money"):
-		var money_min := 0.0
-		var money_max := 0.0
-		if typeof(obj.money) == TYPE_REAL:
-			if obj.money > 0:
-				money_min = obj.money
-			money = int(round(money_min))
-		elif typeof(obj.money) == TYPE_DICTIONARY:
-			if obj.money.has("min") and typeof(obj.money.min) == TYPE_REAL and obj.money.min > 0:
-				money_min = obj.money.min
-			if obj.money.has("max") and typeof(obj.money.max) == TYPE_REAL:
-				money_max = obj.money.max
-				if money_max < money_min:
-					money_max = money_min
-		money = int(round(rand_range(money_min, money_max)))
+		$Resources.init_component(obj["money"])
 		
 	if obj.has("weapon") and $Weapon.init_component(obj.weapon):
 		has_weapon = true
@@ -88,11 +72,8 @@ func _on_VisibilityNotifier2D_screen_exited() -> void:
 	queue_free()
 
 
-func on_destroyed() -> void:
-	emit_signal("destroyed_hp_object", self, money)
-	if money > 0 and not Globals.SILENT_MODE:
-		money_sound.play()
-#		die effect or sound?
+func on_destroyed() -> void: 
+	emit_signal("destroyed_hp_object", self, $Resources.give_all())
 #	disconnect("avatar_damaged", avatar_node, "on_damaged")
 	queue_free()
 

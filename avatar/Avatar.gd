@@ -18,7 +18,6 @@ enum {
 var state := START
 
 #var score := Globals.INITIAL_SCORE
-var money := Globals.INITIAL_MONEY
 
 onready var animation := $AnimatedSprite
 onready var jump_sound := $JumpSound
@@ -46,21 +45,9 @@ func init_object(avatar_obj: Dictionary) -> void:
 	else:
 		print("ERROR: Avatar has no hp")
 			
-#	if avatar_obj.has("money"):
-#		var money_min := 0.0
-#		var money_max := 0.0
-#		if typeof(obj.money) == TYPE_REAL:
-#			if obj.money > 0:
-#				money_min = obj.money
-#			money = int(round(money_min))
-#		elif typeof(obj.money) == TYPE_DICTIONARY:
-#			if obj.money.has("min") and typeof(obj.money.min) == TYPE_REAL and obj.money.min > 0:
-#				money_min = obj.money.min
-#			if obj.money.has("max") and typeof(obj.money.max) == TYPE_REAL:
-#				money_max = obj.money.max
-#				if money_max < money_min:
-#					money_max = money_min
-#		money = int(round(rand_range(money_min, money_max)))
+	if avatar_obj.has("money"):
+		$Resources.init_component(avatar_obj["money"])
+		# update UI money cointer
 
 
 func _physics_process(delta):
@@ -134,9 +121,11 @@ func get_random_state(state_list):
 	
 	
 func on_coin_picked(money_given: int):
-	money += money_given
 #	Signals.emit_signal("update_score", score)
-	Signals.emit_signal("update_money", money)
+#	Signals.emit_signal("update_money", money)
+	if money_given > 0:
+		$Resources.add_money(money_given)
+		$Resources.update_ui()
 
 
 func on_attacked_hp_object(attacking_node: Node2D) -> void:
@@ -156,11 +145,11 @@ func on_attacked_one_hit_mob(attacking_node: Node2D, money_given: int = 0) -> vo
 	animation.play("AirAttack")
 
 
-func add_money(money_given: int) -> void:
-	if money_given > 0:
-#		print("Money given: ", money_given)
-		money += money_given
-		Signals.emit_signal("update_money", money)
+#func add_money(money_given: int) -> void:
+#	if money_given > 0:
+##		print("Money given: ", money_given)
+#		money += money_given
+#		Signals.emit_signal("update_money", money)
 
 
 # when receiving damage from object's weapon
