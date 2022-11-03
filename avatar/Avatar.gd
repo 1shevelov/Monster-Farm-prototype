@@ -31,6 +31,7 @@ func _ready():
 	pass
 
 
+# called from Game
 func connect_ui(money_counter: Control, hp_bar: Control) -> void:
 	$Resources.connect_avatar_ui(money_counter)
 	$hp.connect_avatar_ui(hp_bar)
@@ -45,7 +46,6 @@ func init_object(avatar_obj: Dictionary) -> void:
 		$Weapon.init_component(avatar_obj.weapon)
 	if avatar_obj.has("hp"):
 		$hp.init_component(avatar_obj.hp)
-		$hp.show_ui()
 	else:
 		print("ERROR: Avatar has no hp")
 			
@@ -87,7 +87,7 @@ func _physics_process(delta: float) -> void:
 
 func _input(event) -> void:
 #	IDLE state only on world start
-	print("STATE = ", state)
+#	print("STATE = ", state)
 	if state == START and event.is_action_pressed("jump"):
 #		print("START")
 		state = RUN

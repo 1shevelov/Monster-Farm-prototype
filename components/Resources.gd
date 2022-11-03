@@ -27,7 +27,7 @@ func init_component(money_data) -> void:
 
 func connect_avatar_ui(money_counter_node: Control) -> void:
 	var err = connect("money_changed", money_counter_node, "update_counter", \
-	[money], CONNECT_DEFERRED)
+	[], CONNECT_DEFERRED)
 	if err:
 		print_debug("Error connecting \"money_changed\" to ", money_counter_node)
 
@@ -54,7 +54,7 @@ func give_a_part(percent: float) -> int:
 func avatar_add_money(addition: int) -> void:
 	if addition > 0:
 		money += addition
-		emit_signal("money_changed")
+		emit_signal("money_changed", money)
 
 
 func avatar_remove_money(subtraction: int) -> void:
@@ -62,5 +62,5 @@ func avatar_remove_money(subtraction: int) -> void:
 		money -= subtraction
 		if money < 0:
 			money = 0
-		emit_signal("money_changed")
+		emit_signal("money_changed", money)
 
