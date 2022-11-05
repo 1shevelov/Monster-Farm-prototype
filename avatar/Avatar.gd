@@ -48,7 +48,7 @@ func init_object(avatar_obj: Dictionary) -> void:
 		$Resources.init_component(avatar_obj["money"])
 		# update UI money cointer
 		
-	$Jump.init_component($AnimatedSprite)
+	$Jump.init_component($AnimatedSprite, get_global_position().y)
 
 
 func _physics_process(delta: float) -> void:
@@ -83,6 +83,9 @@ func _input(event) -> void:
 	if state == RUN and event.is_action_pressed("jump"):
 		state = JUMP
 		
+	if state == IDLE and event.is_action_released("jump"):
+		$Jump.set_fall_gravity()
+		
 	if state == ATTACK and event.is_action_pressed("jump"):
 		$AttackTimer.stop()
 		state = DASH
@@ -93,6 +96,7 @@ func _input(event) -> void:
 func _on_Area2D_body_entered(body):
 	if body is StaticBody2D and state != START:
 		state = RUN
+		$Jump.set_jump_gravity()
 
 
 func _on_Area2D_body_exited(_body):
