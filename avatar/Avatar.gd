@@ -81,12 +81,14 @@ func _input(event) -> void:
 		Signals.emit_signal("attack_finished")
 
 	if state == RUN and event.is_action_pressed("jump"):
+		print("Jumping while RUN")
 		state = JUMP
 		
 	if state == IDLE and event.is_action_released("jump"):
 		$Jump.set_fall_gravity()
 		
 	if state == ATTACK and event.is_action_pressed("jump"):
+		print("Jumping while ATTACK")
 		$AttackTimer.stop()
 		state = DASH
 		Globals.world_speed = Globals.DASH_WORLD_SPEED
@@ -174,7 +176,6 @@ func on_object_destroyed(destroyed_node: Node2D, money_given: int = 0) -> void:
 
 
 func on_dash_finished():
-	state = RUN
 	Globals.world_speed = Globals.RUN_WORLD_SPEED
 
 
