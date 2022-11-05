@@ -2,10 +2,6 @@ extends KinematicBody2D
 
 var velocity := Vector2.ZERO
 
-export var jump_velocity := 600
-export var dash_velocity := 250
-export var gravity_scale := 20.0
-
 enum {
 	START,
 	IDLE,
@@ -20,7 +16,6 @@ var state := START
 #var score := Globals.INITIAL_SCORE
 
 onready var animation := $AnimatedSprite
-onready var jump_sound := $JumpSound
 onready var death_sound := $DeathSound
 
 var avatar_name := ""
@@ -52,6 +47,8 @@ func init_object(avatar_obj: Dictionary) -> void:
 	if avatar_obj.has("money"):
 		$Resources.init_component(avatar_obj["money"])
 		# update UI money cointer
+		
+	$Jump.init_component($AnimatedSprite)
 
 
 func _physics_process(delta: float) -> void:
@@ -61,26 +58,15 @@ func _physics_process(delta: float) -> void:
 		RUN:
 			animation.play("Run")
 		JUMP:
-			velocity = Vector2.ZERO
-			velocity.y -= jump_velocity
-			animation.play("Jump")
-			if not Globals.SILENT_MODE:
-				jump_sound.play()
+			$Jump.jump()
 			state = IDLE
 		DASH:
-			velocity = Vector2.ZERO
-			velocity.y -= jump_velocity
-#			animation.play("Jump")
-			if not Globals.SILENT_MODE:
-				jump_sound.play()
-			animation.play("Dash")
-#			velocity.x += dash_velocity
-#			TODO: shift position
+			$Jump.dash()
 			state = IDLE
 		ATTACK:
 			animation.play("Attack")
 	
-	velocity.y += gravity_scale
+	$Jump.gravity()
 # warning-ignore:return_value_discarded
 	move_and_collide(velocity * delta)
 
@@ -100,10 +86,8 @@ func _input(event) -> void:
 	if state == ATTACK and event.is_action_pressed("jump"):
 		$AttackTimer.stop()
 		state = DASH
-		print("DASH")
 		Globals.world_speed = Globals.DASH_WORLD_SPEED
 		Signals.emit_signal("attack_finished")
-		$DashTimer.start()
 
 
 func _on_Area2D_body_entered(body):
@@ -185,9 +169,8 @@ func on_object_destroyed(destroyed_node: Node2D, money_given: int = 0) -> void:
 		Signals.emit_signal("attack_finished")
 
 
-func _on_DashTimer_timeout():
+func on_dash_finished():
 	state = RUN
 	Globals.world_speed = Globals.RUN_WORLD_SPEED
-	$DashTimer.stop()
 
 

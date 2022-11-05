@@ -9,7 +9,7 @@
 [ext_resource path="res://assets/avatar/adventurer-jump-03.png" type="Texture" id=7]
 [ext_resource path="res://avatar/Avatar.gd" type="Script" id=8]
 [ext_resource path="res://assets/sounds/death.wav" type="AudioStream" id=9]
-[ext_resource path="res://assets/sounds/jump.wav" type="AudioStream" id=10]
+[ext_resource path="res://components/Jump.tscn" type="PackedScene" id=10]
 [ext_resource path="res://assets/avatar/adventurer-attack2-05.png" type="Texture" id=11]
 [ext_resource path="res://assets/avatar/adventurer-attack2-03.png" type="Texture" id=12]
 [ext_resource path="res://assets/avatar/adventurer-attack2-04.png" type="Texture" id=13]
@@ -90,13 +90,6 @@ shape = SubResource( 3 )
 
 [node name="AttackTimer" type="Timer" parent="."]
 
-[node name="DashTimer" type="Timer" parent="."]
-wait_time = 0.8
-
-[node name="JumpSound" type="AudioStreamPlayer" parent="."]
-stream = ExtResource( 10 )
-volume_db = -20.0
-
 [node name="DeathSound" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 9 )
 volume_db = -25.0
@@ -108,7 +101,8 @@ visible = false
 
 [node name="Resources" parent="." instance=ExtResource( 30 )]
 
+[node name="Jump" parent="." instance=ExtResource( 10 )]
+
 [connection signal="body_entered" from="Area2D" to="." method="_on_Area2D_body_entered"]
 [connection signal="body_exited" from="Area2D" to="." method="_on_Area2D_body_exited"]
 [connection signal="timeout" from="AttackTimer" to="." method="_on_AttackTimer_timeout"]
-[connection signal="timeout" from="DashTimer" to="." method="_on_DashTimer_timeout"]
