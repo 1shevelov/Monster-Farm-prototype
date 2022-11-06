@@ -76,23 +76,27 @@ func _input(event) -> void:
 #	print("STATE = ", state)
 	if state == START and event.is_action_pressed("jump"):
 		$Stats.start_life()
+		$Stats.jumps += 1
 		state = RUN
 		Globals.world_speed = Globals.RUN_WORLD_SPEED
 		Signals.emit_signal("attack_finished")
 
 	if state == RUN and event.is_action_pressed("jump"):
-		print("Jumping while RUN")
 		state = JUMP
+		$Stats.jumps += 1
 		
 	if state == IDLE and event.is_action_released("jump"):
 		$Jump.set_fall_gravity()
 		
 	if state == ATTACK and event.is_action_pressed("jump"):
-		print("Jumping while ATTACK")
 		$AttackTimer.stop()
+		$Stats.jumps += 1
 		state = DASH
 		Globals.world_speed = Globals.DASH_WORLD_SPEED
 		Signals.emit_signal("attack_finished")
+		
+	if event.is_action_pressed("end_life"):
+		on_killed()
 
 
 func _on_Area2D_body_entered(body):
@@ -137,6 +141,7 @@ func on_attacked_one_hit_mob(attacking_node: Node2D, money_given: int = 0) -> vo
 	attacked_node = attacking_node
 	$Resources.avatar_add_money(money_given)
 	$Stats.total_money += money_given
+	$Stats.killed_one_hit_mobs += 1
 #	animation.stop()
 	animation.play("AirAttack")
 
@@ -149,7 +154,7 @@ func on_damaged(damage: int) -> void:
 
 
 func on_killed():
-#	print("The avatar is dead")
+	print("The avatar is dead")
 	$Stats.end_life()
 	hide()
 	Signals.disconnect("coin_picked", self, "on_coin_picked")
@@ -158,6 +163,8 @@ func on_killed():
 	Globals.world_speed = Globals.ZERO_WORLD_SPEED
 	Signals.emit_signal("world_stopped")
 	Signals.emit_signal("game_over")
+	print("  ** END RESULTS **")
+	print($Stats.get_finals())
 	yield(death_sound, "finished")
 	queue_free()
 
@@ -165,6 +172,7 @@ func on_killed():
 func _on_AttackTimer_timeout():
 	var damage = $Weapon.get_damage()
 #	print("Avatar is attacking with the %s for %s" % [$Weapon.weapon_name, damage])
+	$Stats.total_damage_dealt += damage
 	attacked_node.receive_damage(damage)
 
 
@@ -175,6 +183,8 @@ func on_object_destroyed(destroyed_node: Node2D, money_given: int = 0) -> void:
 		$Resources.avatar_add_money(money_given)
 		$Stats.total_money += money_given
 		$AttackTimer.stop()
+		# since for now only obstacles has hp
+		$Stats.destroyed_obstacles += 1
 		state = RUN
 		Globals.world_speed = Globals.RUN_WORLD_SPEED
 		Signals.emit_signal("attack_finished")
