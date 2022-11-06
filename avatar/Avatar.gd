@@ -75,7 +75,7 @@ func _input(event) -> void:
 #	IDLE state only on world start
 #	print("STATE = ", state)
 	if state == START and event.is_action_pressed("jump"):
-#		print("START")
+		$Stats.start_life()
 		state = RUN
 		Globals.world_speed = Globals.RUN_WORLD_SPEED
 		Signals.emit_signal("attack_finished")
@@ -114,10 +114,12 @@ func get_random_state(state_list):
 	return state_list.front()
 	
 	
-func on_hit_resource_object(money: int):
+func on_hit_resource_object(money_given: int):
 #	Signals.emit_signal("update_score", score)
 #	Signals.emit_signal("update_money", money)
-	$Resources.avatar_add_money(money)
+	$Resources.avatar_add_money(money_given)
+	$Stats.total_money += money_given
+	$Stats.coins_picked += 1
 	# Play pick up animation, like Yipee!
 
 
@@ -130,10 +132,11 @@ func on_attacked_hp_object(attacking_node: Node2D) -> void:
 	Signals.emit_signal("world_stopped")
 
 
-func on_attacked_one_hit_mob(attacking_node: Node2D, money: int = 0) -> void:
+func on_attacked_one_hit_mob(attacking_node: Node2D, money_given: int = 0) -> void:
 #	print(attacking_node, " killed")
 	attacked_node = attacking_node
-	$Resources.avatar_add_money(money)
+	$Resources.avatar_add_money(money_given)
+	$Stats.total_money += money_given
 #	animation.stop()
 	animation.play("AirAttack")
 
@@ -146,7 +149,8 @@ func on_damaged(damage: int) -> void:
 
 
 func on_killed():
-	print("The avatar is dead")
+#	print("The avatar is dead")
+	$Stats.end_life()
 	hide()
 	Signals.disconnect("coin_picked", self, "on_coin_picked")
 	if not Globals.SILENT_MODE:
@@ -169,6 +173,7 @@ func on_object_destroyed(destroyed_node: Node2D, money_given: int = 0) -> void:
 	if attacked_node == destroyed_node:
 		print(destroyed_node, " destroyed")
 		$Resources.avatar_add_money(money_given)
+		$Stats.total_money += money_given
 		$AttackTimer.stop()
 		state = RUN
 		Globals.world_speed = Globals.RUN_WORLD_SPEED

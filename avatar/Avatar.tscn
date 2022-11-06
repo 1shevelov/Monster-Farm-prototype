@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=2]
+[gd_scene load_steps=35 format=2]
 
 [ext_resource path="res://assets/avatar/adventurer-run-01.png" type="Texture" id=1]
 [ext_resource path="res://assets/avatar/adventurer-run-02.png" type="Texture" id=2]
@@ -30,6 +30,7 @@
 [ext_resource path="res://assets/avatar/adventurer-drop-kick-03.png" type="Texture" id=28]
 [ext_resource path="res://objects/Weapon.tscn" type="PackedScene" id=29]
 [ext_resource path="res://components/Resources.tscn" type="PackedScene" id=30]
+[ext_resource path="res://avatar/Stats.tscn" type="PackedScene" id=31]
 
 [sub_resource type="SpriteFrames" id=1]
 animations = [ {
@@ -102,6 +103,8 @@ visible = false
 [node name="Resources" parent="." instance=ExtResource( 30 )]
 
 [node name="Jump" parent="." instance=ExtResource( 10 )]
+
+[node name="Stats" parent="." instance=ExtResource( 31 )]
 
 [connection signal="body_entered" from="Area2D" to="." method="_on_Area2D_body_entered"]
 [connection signal="body_exited" from="Area2D" to="." method="_on_Area2D_body_exited"]
