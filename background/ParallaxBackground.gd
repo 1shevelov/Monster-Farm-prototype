@@ -3,7 +3,7 @@ extends ParallaxBackground
 onready var sky_back := $SkyParallaxLayer
 onready var mid_back := $MidgroundParallaxLayer
 
-const MIDBACK_DELTA_SPEED := -25
+const MIDBACK_DELTA_SPEED := -5
 const MIDBACK_DELTA_STOP_SPEED := 0
 const SKY_DELTA_SPEED := 4
 
@@ -19,9 +19,9 @@ func _ready() -> void:
 
 func _process(delta) -> void:
 	if is_world_moving:
-		mid_back.motion_offset.x += MIDBACK_DELTA_SPEED * delta
-	else:
-		mid_back.motion_offset.x += MIDBACK_DELTA_STOP_SPEED * delta
+		mid_back.motion_offset.x += MIDBACK_DELTA_SPEED * Globals.RUN_WORLD_SPEED * delta
+#	else:
+#		mid_back.motion_offset.x += MIDBACK_DELTA_STOP_SPEED * delta
 	sky_back.motion_offset.x += SKY_DELTA_SPEED * delta
 
 

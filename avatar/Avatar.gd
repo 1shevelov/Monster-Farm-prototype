@@ -82,6 +82,7 @@ func _input(event) -> void:
 		Signals.emit_signal("attack_finished")
 
 	if state == RUN and event.is_action_pressed("jump"):
+		print("JUMP while RUN")
 		state = JUMP
 		$Stats.jumps += 1
 		
@@ -89,6 +90,7 @@ func _input(event) -> void:
 		$Jump.set_fall_gravity()
 		
 	if state == ATTACK and event.is_action_pressed("jump"):
+		print("JUMP while ATTACK")
 		$AttackTimer.stop()
 		$Stats.jumps += 1
 		state = DASH

@@ -12,6 +12,9 @@ var obstacle_name := ""
 
 var has_weapon := false
 
+# to address a bug when falling on top of an hp object
+var is_already_collided_with_avatar := false
+
 
 #func _ready():
 #	pass
@@ -59,7 +62,8 @@ func connect_to_avatar() -> void:
 
 
 func _on_Collision_body_entered(some_node: Node) -> void:
-	if some_node.name == Globals.AVATAR_NODE_NAME:
+	if some_node.name == Globals.AVATAR_NODE_NAME and not is_already_collided_with_avatar:
+		is_already_collided_with_avatar = true
 		avatar_node = some_node
 		if not Globals.SILENT_MODE:
 			hit_sound.play()
