@@ -102,7 +102,7 @@ func _input(event) -> void:
 
 
 func _on_Area2D_body_entered(body):
-	if body is StaticBody2D and state != START:
+	if body is StaticBody2D and state != START and state != ATTACK:
 		state = RUN
 		$Jump.set_jump_gravity()
 
